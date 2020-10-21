@@ -26,7 +26,6 @@ const currentScriptSrc = scripts[scripts.length - 1].src;
  * @type {string | null}
  */
 const urlApiKey = getParameterByName('apiKey', currentScriptSrc);
-uxkeyConsole.log(urlApiKey);
 /**
  * @description Function to manually start UX-Key script monitoring operation.
  * @param {string | null} apiKey UX-Key User API Key.

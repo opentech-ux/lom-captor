@@ -23,3 +23,10 @@ export const hasNumber = (string) => /\d/.test(string);
  * @description Instance of the console.
  */
 export const uxkeyConsole = window.console;
+/**
+ * @description Function to verify if a given number is within the range of two other numbers.
+ * @param {*} number Number to compare.
+ * @param {*} limitA First limit.
+ * @param {*} limitB Last limit.
+ */
+export const isBetween = (number, limitA, limitB) => (number - limitA) * (number - limitB) <= 0;
