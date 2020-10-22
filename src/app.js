@@ -1,7 +1,8 @@
 /* eslint-disable import/prefer-default-export */
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
-import { getParameterByName, uxkeyConsole } from './modules/tools';
+import initScript from './modules/init';
+import { getParameterByName } from './modules/tools';
 
 /**
  * @description Object to specify the time of the page states.
@@ -30,11 +31,9 @@ const urlApiKey = getParameterByName('apiKey', currentScriptSrc);
  * @description Function to manually start UX-Key script monitoring operation.
  * @param {string | null} apiKey UX-Key User API Key.
  */
-export const start = (apiKey = null) => {
-   uxkeyConsole.log('INIT MANUALLY', apiKey);
-};
+export const start = (apiKey = null) => initScript(apiKey);
 
-document.onreadystatechange = () => {
+document.onreadystatechange = async () => {
    loadingTime[document.readyState] = Date.now() - startTime;
-   if (document.readyState === 'complete' && urlApiKey) uxkeyConsole.log('INIT BY APIKEY', urlApiKey);
+   if (document.readyState === 'complete' && urlApiKey) initScript(urlApiKey);
 };
