@@ -1,4 +1,5 @@
 import { GET, POST } from './http';
+import { hasNumber } from './tools';
 
 const pageHost = window.location.host;
 const pageHash = window.location.hash;
@@ -42,4 +43,51 @@ export const setSite = async (userInfo) => {
    if (siteInList) return siteInList;
    const siteInfo = await createSite({ fields: { host: pageHost }, user: userInfo.data._id });
    return siteInfo.data;
+};
+/**
+ * @description Function to obtain the list of the pages from a site.
+ * @param {import('../../types/SiteInfo').SiteInfo} siteInfo API response about the site obtained.
+ * @returns {Promise<import('../../types/PagesResponse').PagesResponse>} API response of the pages.
+ */
+export const getPages = (siteInfo) =>
+   GET(`pages?where=site:=:${siteInfo._id}`)
+      .then((resp) => resp)
+      .catch((err) => err);
+/**
+ * @description Function to create a record in the API pages.
+ * @param {import('../../types/PageInfo').PageInfo} pageData New page information.
+ * @returns {Promise<import('../../types/PageResponse').PageResponse>} API response of the new page.
+ */
+export const createPage = (pageData) =>
+   POST('pages', pageData)
+      .then((resp) => resp)
+      .catch((err) => err);
+/**
+ * @description Function to verify the status of a page with the current page characteristics.
+ * @param {import('../../types/SiteInfo').SiteInfo} siteInfo API response about the site obtained.
+ * @returns {Promise<import('../../types/PageInfo').PageInfo>} Information on the page found or created.
+ */
+export const setPage = async (siteInfo) => {
+   let truePath = null;
+   let trueHash = null;
+
+   pagePath.split('/').forEach((part) => {
+      truePath = hasNumber(part) ? pagePath.replace(part, '{parameter}') : pagePath;
+   });
+
+   pageHash.split('/').forEach((part) => {
+      trueHash = hasNumber(part) ? pageHash.replace(part, '{parameter}') : pageHash;
+   });
+
+   const pageResp = await getPages(siteInfo);
+   const pageInList = pageResp.data.pages.find((page) => {
+      if (isHash) return page.fields.hash === trueHash || page.fields.hash === `${trueHash}/`;
+      return page.fields.path === truePath || page.fields.path === `${truePath}/`;
+   });
+   if (pageInList) return pageInList;
+   const pageInfo = await createPage({
+      fields: { hash: trueHash === '' ? null : trueHash, path: truePath === '' ? null : truePath },
+      site: siteInfo._id,
+   });
+   return pageInfo.data;
 };
