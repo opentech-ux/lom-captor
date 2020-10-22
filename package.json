@@ -44,10 +44,10 @@
    },
    "scripts": {
       "build": "webpack --config webpack.config.js",
-      "eslint:check": "eslint --ext .js,.jsx,.ts,.tsx --ignore-path .gitignore . --color",
-      "eslint:format": "eslint --ext .js,.jsx,.ts,.tsx --ignore-path .gitignore . --fix",
-      "prettier:check": "prettier \"./**/*.{js,jsx,ts,tsx}\" --ignore-path .gitignore -l ",
-      "prettier:format": "prettier \"./**/*.{js,jsx,ts,tsx}\" --ignore-path .gitignore -l --write"
+      "eslint:check": "eslint --ext .js,.jsx --ignore-path .gitignore . --color",
+      "eslint:format": "eslint --ext .js,.jsx --ignore-path .gitignore . --fix",
+      "prettier:check": "prettier \"./**/*.{js,jsx}\" --ignore-path .gitignore -l ",
+      "prettier:format": "prettier \"./**/*.{js,jsx}\" --ignore-path .gitignore -l --write"
    },
    "version": "1.0.0"
 }
