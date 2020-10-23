@@ -1,6 +1,5 @@
 export interface PageInfo {
    [key: string]: unknown;
-
    _id?: string;
    fields: {
       hash: string | null;
