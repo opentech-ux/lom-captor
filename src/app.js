@@ -31,9 +31,9 @@ const urlApiKey = getParameterByName('apiKey', currentScriptSrc);
  * @description Function to manually start UX-Key script monitoring operation.
  * @param {string | null} apiKey UX-Key User API Key.
  */
-export const start = (apiKey = null) => initScript(apiKey);
+export const start = (apiKey = null) => initScript(apiKey, loadingTime);
 
 document.onreadystatechange = async () => {
    loadingTime[document.readyState] = Date.now() - startTime;
-   if (document.readyState === 'complete' && urlApiKey) initScript(urlApiKey);
+   if (document.readyState === 'complete' && urlApiKey) initScript(urlApiKey, loadingTime);
 };

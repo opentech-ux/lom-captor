@@ -1,5 +1,5 @@
 import { GET, POST } from './http';
-import { hasNumber } from './tools';
+import { checkUrlParameters } from './tools';
 
 /**
  * @description URL's host and port (if different from the default port for the scheme).
@@ -57,8 +57,15 @@ export const createSite = (siteData) =>
  * @returns {Promise<import('../../types/SiteInfo').SiteInfo>} Information on the site (found or created).
  */
 export const setSite = async (userInfo) => {
+   /**
+    * @description API response with the user's sites list.
+    */
    const sitesResp = await getSites(userInfo);
+   /**
+    * @description Site in the list that corresponds to the current site.
+    */
    const siteInList = sitesResp.data.sites.find((site) => site.fields.host === pageHost);
+   //* If a site is found, its information is sent. Otherwise, a new registration is made in the database and the corresponding information is sent.
    if (siteInList) return siteInList;
    const siteInfo = await createSite({ fields: { host: pageHost }, user: userInfo.data._id });
    return siteInfo.data;
@@ -92,29 +99,38 @@ export const createPage = (pageData) =>
 export const setPage = async (siteInfo) => {
    /**
     * @description Final version of [pagePath] to send to the database.
+    * @type {string}
     */
-   let truePath = null;
+   const truePath = checkUrlParameters(pagePath);
    /**
     * @description Final version of [pageHash] to send to the database.
+    * @type {string}
     */
-   let trueHash = null;
-
-   pagePath.split('/').forEach((part) => {
-      truePath = hasNumber(part) ? pagePath.replace(part, '{parameter}') : pagePath;
-   });
-
-   pageHash.split('/').forEach((part) => {
-      trueHash = hasNumber(part) ? pageHash.replace(part, '{parameter}') : pageHash;
-   });
-
+   const trueHash = checkUrlParameters(pageHash);
+   /**
+    * @description API response with the site's pages list.
+    */
    const pageResp = await getPages(siteInfo);
+   /**
+    * @description Page in the list that corresponds to the current page.
+    */
    const pageInList = pageResp.data.pages.find((page) => {
-      if (isHashed) return page.fields.hash === trueHash || page.fields.hash === `${trueHash}/`;
-      return page.fields.path === truePath || page.fields.path === `${truePath}/`;
+      if (isHashed)
+         return (
+            page.fields.hash === trueHash ||
+            page.fields.hash === `${trueHash}/` ||
+            page.fields.hash === trueHash.replace(/\/+$/, '')
+         );
+      return (
+         page.fields.path === truePath ||
+         page.fields.path === `${truePath}/` ||
+         page.fields.hash === truePath.replace(/\/+$/, '')
+      );
    });
+   //* If a page is found, its information is sent. Otherwise, a new registration is made in the database and the corresponding information is sent.
    if (pageInList) return pageInList;
    const pageInfo = await createPage({
-      fields: { hash: trueHash === '' ? null : trueHash, path: truePath === '' ? null : truePath },
+      fields: { hash: !isHashed ? null : trueHash, path: isHashed ? null : truePath },
       site: siteInfo._id,
    });
    return pageInfo.data;
