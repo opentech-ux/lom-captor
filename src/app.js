@@ -2,7 +2,7 @@
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import initScript from './modules/init';
-import { getParameterByName } from './modules/tools';
+import { getParameterByName, uxkeyConsole } from './modules/tools';
 
 /**
  * @description Object to specify the time of the page states.

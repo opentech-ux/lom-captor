@@ -22,6 +22,16 @@ const pagePath = window.location.pathname;
 const isHashed = !!pageHash.replace(/\/+$/, '');
 
 /**
+ * @description The current version of the data handled by the script.
+ */
+const versionOfData = '1.5';
+
+/**
+ * @description The current version of the data handled by the script with the prefix of the type of data handled.
+ */
+const dataVersion = `${process.env.NODE_ENV === 'development' ? 'dev' : 'prod'}-${versionOfData}`;
+
+/**
  * @description Function to obtain information from the user.
  * @param {string} apiKey UX-Key User API Key.
  * @returns {Promise<import('../../types/UserResponse').UserResponse>} API response about the user obtained.
