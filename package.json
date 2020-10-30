@@ -45,8 +45,8 @@
       "url": "git+ssh://git@gitlab.com/RubenConde/ux-key-script.git"
    },
    "scripts": {
-      "build:prod": "webpack --config webpack.prod.js",
       "build:dev": "webpack --config webpack.dev.js",
+      "build:prod": "webpack --config webpack.prod.js",
       "eslint:check": "eslint --ext .js,.jsx --ignore-path .gitignore . --color",
       "eslint:format": "eslint --ext .js,.jsx --ignore-path .gitignore . --fix",
       "prettier:check": "prettier \"./**/*.{js,jsx}\" --ignore-path .gitignore -l ",
