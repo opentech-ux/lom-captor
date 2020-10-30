@@ -1,6 +1,6 @@
+import JSCookies from 'js-cookie';
 import { GET, POST } from './http';
-import { checkUrlParameters } from './tools';
-
+import { checkUrlParameters, uxkeyConsole } from './tools';
 /**
  * @description URL's host and port (if different from the default port for the scheme).
  */
@@ -144,4 +144,35 @@ export const setPage = async (siteInfo) => {
       site: siteInfo._id,
    });
    return pageInfo.data;
+};
+
+/**
+ * @description Function to create a record in the API visitors.
+ * @param {import('../../types/VisitorInfo').VisitorInfo} visitorData New visitor information.
+ * @returns {Promise<import('../../types/VisitorResponse').VisitorResponse>} API response of the new visitor.
+ */
+export const createVisitor = (visitorData) =>
+   POST('visitors', visitorData)
+      .then((resp) => resp)
+      .catch((err) => err);
+
+/**
+ * @description Function to check if there is a record of a visitor to the page in the browser's cookies.
+ * If there is, its ID is returned, otherwise a record is created in the database and the cookie is created in the browser.
+ * The ID is therefore returned.
+ * @param {string} pageId The ID of the page where the visitor is
+ * @param {string} siteId The ID of the site where the visitor is
+ * @return {Promise<string>} The visitor's ID (found or created)
+ */
+export const setVisitor = async (pageId, siteId) => {
+   const visitorCookieValue = JSCookies.get('ux-key_visitor');
+   uxkeyConsole.log(visitorCookieValue);
+   if (visitorCookieValue) return visitorCookieValue;
+   const visitorCreateResponse = await createVisitor({
+      fields: { dataVersion },
+      page: pageId,
+      site: siteId,
+   });
+   JSCookies.set('ux-key_visitor', visitorCreateResponse.data._id, { path: '/', expires: 365 });
+   return visitorCreateResponse.data._id;
 };

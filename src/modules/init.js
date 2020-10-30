@@ -1,4 +1,4 @@
-import { getUser, setPage, setSite } from './api';
+import { getUser, setPage, setSite, setVisitor } from './api';
 import { uxkeyConsole } from './tools';
 /**
  * @description Function that initiates the operation of the script by setting the information obtained.
@@ -9,7 +9,8 @@ const initScript = async (apiKey, loadingTimeObject) => {
    const userInfo = await getUser(apiKey);
    const siteInfo = await setSite(userInfo);
    const pageInfo = await setPage(siteInfo);
-   uxkeyConsole.log(pageInfo);
+   const visitorId = await setVisitor(pageInfo._id, siteInfo._id);
+   uxkeyConsole.log(visitorId);
    uxkeyConsole.log(loadingTimeObject);
 };
 
