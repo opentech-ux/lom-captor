@@ -28,9 +28,9 @@ export const uxkeyConsole = window.console;
 
 /**
  * @description Function to verify if a given number is within the range of two other numbers.
- * @param {*} number Number to compare.
- * @param {*} limitA First limit.
- * @param {*} limitB Last limit.
+ * @param {number} number Number to compare.
+ * @param {number} limitA First limit.
+ * @param {number} limitB Last limit.
  */
 export const isBetween = (number, limitA, limitB) => (number - limitA) * (number - limitB) <= 0;
 
@@ -40,7 +40,7 @@ export const isBetween = (number, limitA, limitB) => (number - limitA) * (number
  * @param {string} urlExtension Extension of the URL where the page is identified.
  * @returns {string} The same extension of the URL but with the identification parameters replaced by the text: "{parameter}".
  *
- * @see {@link https://cutt.ly/case-001} for further information.
+ * @see {@link https://rubn.xyz/3exvv} for further information.
  */
 
 export const checkUrlParameters = (urlExtension) =>

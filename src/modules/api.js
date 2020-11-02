@@ -1,6 +1,6 @@
 import JSCookies from 'js-cookie';
 import { GET, POST } from './http';
-import { checkUrlParameters, uxkeyConsole } from './tools';
+import { checkUrlParameters } from './tools';
 /**
  * @description URL's host and port (if different from the default port for the scheme).
  */
@@ -75,8 +75,9 @@ export const setSite = async (userInfo) => {
     * @description Site in the list that corresponds to the current site.
     */
    const siteInList = sitesResp.data.sites.find((site) => site.fields.host === pageHost);
-   //* If a site is found, its information is sent. Otherwise, a new registration is made in the database and the corresponding information is sent.
+   // * If a site is found, its information is sent.
    if (siteInList) return siteInList;
+   // * Otherwise, a new registration is made in the database and the corresponding information is sent.
    const siteInfo = await createSite({ fields: { host: pageHost }, user: userInfo.data._id });
    return siteInfo.data;
 };
@@ -137,8 +138,9 @@ export const setPage = async (siteInfo) => {
          page.fields.hash === truePath.replace(/\/+$/, '')
       );
    });
-   //* If a page is found, its information is sent. Otherwise, a new registration is made in the database and the corresponding information is sent.
+   // * If a page is found, its information is sent.
    if (pageInList) return pageInList;
+   // * Otherwise, a new registration is made in the database and the corresponding information is sent.
    const pageInfo = await createPage({
       fields: { hash: !isHashed ? null : trueHash, path: isHashed ? null : truePath },
       site: siteInfo._id,
@@ -160,19 +162,24 @@ export const createVisitor = (visitorData) =>
  * @description Function to check if there is a record of a visitor to the page in the browser's cookies.
  * If there is, its ID is returned, otherwise a record is created in the database and the cookie is created in the browser.
  * The ID is therefore returned.
- * @param {string} pageId The ID of the page where the visitor is
- * @param {string} siteId The ID of the site where the visitor is
- * @return {Promise<string>} The visitor's ID (found or created)
+ * @param {string} pageId The ID of the page where the visitor is.
+ * @param {string} siteId The ID of the site where the visitor is.
+ * @return {Promise<string>} The visitor's ID (found or created).
  */
 export const setVisitor = async (pageId, siteId) => {
+   /**
+    * @description Value of the cookie in the browser that contains the visitor's id.
+    */
    const visitorCookieValue = JSCookies.get('ux-key_visitor');
-   uxkeyConsole.log(visitorCookieValue);
+   // * If a value is found in the cookies it is returned.
    if (visitorCookieValue) return visitorCookieValue;
+   // * Otherwise, a new record of visitors is created in the database and in turn a cookie is created in the browser.
    const visitorCreateResponse = await createVisitor({
       fields: { dataVersion },
       page: pageId,
       site: siteId,
    });
    JSCookies.set('ux-key_visitor', visitorCreateResponse.data._id, { path: '/', expires: 365 });
+   // * After this, the visitor's id (created or found) is returned.
    return visitorCreateResponse.data._id;
 };

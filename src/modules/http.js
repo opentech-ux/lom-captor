@@ -42,7 +42,11 @@ export const GET = (endpoint) =>
  */
 export const POST = (endpoint, body) =>
    new Promise((resolve, reject) => {
-      fetch(`${baseURL}${endpoint}`, { ...commonConfig, method: 'POST', body: JSON.stringify(body) })
+      fetch(`${baseURL}${endpoint}`, {
+         ...commonConfig,
+         method: 'POST',
+         body: JSON.stringify(body),
+      })
          .then(async (response) => {
             const data = await response.json().then((responseData) => responseData);
             if (isBetween(response.status, 199, 300) && response.ok) resolve(data);
@@ -58,7 +62,11 @@ export const POST = (endpoint, body) =>
  */
 export const PATCH = (endpoint, body) =>
    new Promise((resolve, reject) => {
-      fetch(`${baseURL}${endpoint}`, { ...commonConfig, method: 'PATCH', body: JSON.stringify(body) })
+      fetch(`${baseURL}${endpoint}`, {
+         ...commonConfig,
+         method: 'PATCH',
+         body: JSON.stringify(body),
+      })
          .then(async (response) => {
             const data = await response.json().then((responseData) => responseData);
             if (isBetween(response.status, 199, 300) && response.ok) resolve(data);
