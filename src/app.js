@@ -18,15 +18,20 @@ const startTime = Date.now();
  */
 const scripts = document.getElementsByTagName('script');
 /**
- * @description Value of the "src" attribute of the last script (usually the execution script) in the list of scripts
- * @see {@link scripts} List of "script" tags.
+ * @description Finds the current script tag.
+ * @param {HTMLScriptElement} el
  */
-const currentScriptSrc = scripts[scripts.length - 1].src;
+const findCurrentScript = (el) => el.src.indexOf('ux-key-lib.js') >= 0;
+/**
+ * @description Value of the "src" attribute of the last script (usually the execution script) in the list of scripts
+ * @type {HTMLScriptElement}
+ */
+const currentScript = Array.prototype.filter.call(scripts, findCurrentScript)[0];
 /**
  * @description UX-Key user API key obtained through the script url.
  * @type {string | null}
  */
-const urlApiKey = getParameterByName('apiKey', currentScriptSrc);
+const urlApiKey = getParameterByName('apiKey', currentScript.src);
 /**
  * @description Function to manually start UX-Key script monitoring operation.
  * @param {string | null} apiKey UX-Key User API Key.
