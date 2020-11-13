@@ -28,7 +28,11 @@ module.exports = {
                ie8: true,
                compress: true,
                safari10: true,
+               format: {
+                  comments: false,
+               },
             },
+            extractComments: false,
          }),
       ],
    },
@@ -36,6 +40,7 @@ module.exports = {
       filename: 'ux-key-lib.js',
       library: 'UXKey',
       path: path.resolve(__dirname, 'dist-dev'),
+      libraryTarget: 'umd',
    },
    plugins: [
       new CleanWebpackPlugin(),
