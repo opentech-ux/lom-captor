@@ -1,3 +1,6 @@
+import consola from 'consola';
+import JSCookies from 'js-cookie';
+
 /**
  * @description Function to obtain the value of a specific parameter in query of a given url.
  * @param {string} name Name of the parameter to search in the query of the given url.
@@ -24,7 +27,7 @@ export const hasNumber = (string) => /\d/.test(string);
 /**
  * @description Instance of the console.
  */
-export const uxkeyConsole = window.console;
+export const uxkeyConsole = consola;
 
 /**
  * @description Function to verify if a given number is within the range of two other numbers.
@@ -48,3 +51,137 @@ export const checkUrlParameters = (urlExtension) =>
       .split('/')
       .map((part) => (hasNumber(part) ? '{parameter}' : part))
       .join('/');
+
+/**
+ * @description Method for grouping (simplifying) the contents of a array.
+ *
+ * @param {Array} array Array to be simplified.
+ * @param {Function} f Function that returns an array with attributes to simplify.
+ * @returns {Array}
+ */
+const simplifyArray = (array, f) => {
+   const groups = {};
+   array.forEach((o) => {
+      const group = JSON.stringify(f(o));
+      groups[group] = groups[group] || [];
+      // eslint-disable-next-line no-param-reassign
+      o.numberTimes = groups[group].length + 1;
+      groups[group].push(o);
+   });
+   return Object.keys(groups).map((group) => {
+      return groups[group].filter((ele) => {
+         return ele.numberTimes === groups[group].length;
+      });
+   });
+};
+
+/**
+ * @description Function to create an object of the elements in the DOM of the page.
+ *
+ * @param {(Element | HTMLElement)} element Element from which to create the object.
+ * @returns {Record<string,unknown>}
+ */
+export const generateDomTree = (element) => {
+   const children = [];
+   const elementRect = element.getBoundingClientRect();
+   const nodeNameFilter = ['HEAD', 'SCRIPT', 'svg', 'symbol', 'defs', 'path'];
+   const elementInfo = {
+      children: [],
+      clientHeight: element.clientHeight,
+      clientWidth: element.clientWidth,
+      // @ts-expect-error Type conflict
+      dataUx: element.dataset.ux || 'NO DATA-UX',
+      nodeName: element.nodeName,
+      rectPos: {
+         bottom: elementRect.bottom,
+         height: elementRect.height,
+         left: elementRect.left,
+         right: elementRect.right,
+         top: elementRect.top,
+         width: elementRect.width,
+         x: elementRect.x,
+         y: elementRect.y,
+      },
+      scrollHeight: element.scrollHeight,
+      scrollWidth: element.scrollWidth,
+      // @ts-expect-error Type conflict
+      title: element.title,
+   };
+   if (element.children.length !== 0) {
+      Array.from(element.children).forEach((el) => {
+         if (nodeNameFilter.indexOf(el.nodeName) === -1) {
+            children.push(generateDomTree(el));
+         }
+      });
+
+      simplifyArray(children, (item) => [item.nodeName, item.children]).forEach((simpleArray) =>
+         simpleArray.forEach((el) => elementInfo.children.push(el))
+      );
+   }
+   return elementInfo;
+};
+
+/**
+ * @description Function to obtain the quantity of the elements.
+ * @param {Element} elt Element from which to create the ID.
+ * @returns {number}
+ */
+const getElementIdx = (elt) => {
+   let count = 1;
+   for (let sib = elt.previousSibling; sib; sib = sib.previousSibling) {
+      if (sib.nodeType === 1 && sib.nodeName === elt.tagName) count += 1;
+   }
+
+   return count;
+};
+
+/**
+ * @description Function to get the xPath of an element.
+ * @param {Element} elt Element from which to get the xPath.
+ * @returns {string}
+ */
+const getElementXPath = (elt) => {
+   let path = '';
+   // @ts-ignore
+   // eslint-disable-next-line no-param-reassign
+   for (; elt && elt.nodeType === 1; elt = elt.parentNode) {
+      const idx = getElementIdx(elt);
+      let xname = elt.tagName;
+      if (idx > 1) xname += `[${idx}]`;
+      path = `/${xname}${path}`;
+   }
+
+   return path;
+};
+
+/**
+ * @description Function to add the attribute to identify an element.
+ * @param {HTMLElement} element Element to identify.
+ */
+export const identifyElements = (element) => {
+   const filter = ['HEAD', 'SCRIPT', 'svg', 'symbol', 'defs', 'path'];
+   const xPath = getElementXPath(element);
+   const uxId = btoa(xPath + element.id);
+   element.setAttribute('data-ux', uxId);
+   if (element.hasChildNodes()) {
+      const children = Array.from(element.children);
+      for (let i = 0; i < children.length; i += 1) {
+         const child = children[i];
+         if (filter.indexOf(child.nodeName) === -1) {
+            // @ts-ignore
+            identifyElements(child);
+         }
+      }
+   }
+};
+
+/**
+ * @description Function to update the previously visited page.
+ *
+ * @param {import('../../types/PageInfo').PageInfo} pageInfo Page information obtained or created previously.
+ * @param {import('../../types/SessionRequestInfo').SessionRequestInfo} sessionInfo Session information obtained or created previously.
+ */
+export const updatePreviousPage = (pageInfo, sessionInfo) => {
+   JSCookies.set('ux-key_prev-page', pageInfo._id, { path: '/', expires: 1 });
+   JSCookies.set('ux-key_prev-session', sessionInfo._id, { path: '/', expires: 1 });
+};

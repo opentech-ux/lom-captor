@@ -1,6 +1,7 @@
 import JSCookies from 'js-cookie';
-import { GET, POST } from './http';
-import { checkUrlParameters } from './tools';
+import getDeviceInfo from './device';
+import { GET, PATCH, POST } from './http';
+import { checkUrlParameters, generateDomTree } from './tools';
 /**
  * @description URL's host and port (if different from the default port for the scheme).
  */
@@ -182,4 +183,94 @@ export const setVisitor = async (pageId, siteId) => {
    JSCookies.set('ux-key_visitor', visitorCreateResponse.data._id, { path: '/', expires: 365 });
    // * After this, the visitor's id (created or found) is returned.
    return visitorCreateResponse.data._id;
+};
+
+/**
+ * @description Function to create a record in the API sessions.
+ * @param {import('../../types/SessionRequestInfo').SessionRequestInfo} sessionData New session information.
+ * @returns {Promise<import('../../types/SessionResponse').SessionResponse>} API response of the new session.
+ */
+export const createSession = (sessionData) =>
+   POST('sessions', sessionData)
+      .then((resp) => resp)
+      .catch((err) => err);
+
+/**
+ * @description Gets the device data and the page to create a new session record in the database.
+ *
+ * @param {import('../../types/PageInfo').PageInfo} pageInfo Page information obtained or created previously.
+ * @param {string} visitorId ID obtained from the current visitor.
+ * @param {Record<string, unknown>} loadingTime Basic page loading information.
+ * @returns {Promise<import('../../types/SessionRequestInfo').SessionRequestInfo>}
+ */
+export const setSession = async (pageInfo, visitorId, loadingTime) => {
+   /**
+    * @description Object representing the structure of the page.
+    */
+   const lom = generateDomTree(document.body);
+   /**
+    * @description Object with device information.
+    */
+   const deviceInfo = getDeviceInfo();
+   /**
+    * @description Previous page ID.
+    */
+   const previousPage = JSCookies.get('ux-key_prev-page') || null;
+   /**
+    * @description Checking if the session has been a refresh.
+    */
+   const pageRefresh = previousPage === pageInfo._id;
+   /**
+    * @description Complete session information.
+    */
+   const sessionReqInfo = {
+      fields: {
+         dataVersion,
+         deviceInfo,
+         devicePixelRatio: window.devicePixelRatio,
+         ended: false,
+         initialBodyClientHeight: document.body.clientHeight,
+         initialBodyClientWidth: document.body.clientWidth,
+         loadingTime,
+         lom,
+         pageRefresh,
+         previousPage: previousPage || null,
+         visitorId,
+      },
+      page: pageInfo._id,
+   };
+
+   const resp = await createSession(sessionReqInfo);
+
+   return resp.data;
+};
+
+/**
+ * @description Function to update a record in the API sessions.
+ * @param {string} sessionId Session ID.
+ * @param {Record<string, unknown>} sessionData Session information to update.
+ * @returns {Promise<import('../../types/SessionResponse').SessionResponse>} API response of the updated session.
+ */
+export const updateSession = (sessionId, sessionData) =>
+   PATCH(`sessions/${sessionId}`, sessionData)
+      .then((resp) => resp)
+      .catch((err) => err);
+
+/**
+ * @description Function to change the finalization status and date of a session.
+ * @returns {Promise<string>}
+ */
+export const updatePreviousSession = async () => {
+   try {
+      const resp = '';
+      const sessionId = JSCookies.get('ux-key_prev-session');
+      const updatedInfo = {
+         ended: true,
+         endedAt: new Date(),
+      };
+      if (sessionId) await updateSession(sessionId, updatedInfo);
+      return resp;
+   } catch (e) {
+      return e;
+   }
 };
