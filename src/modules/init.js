@@ -1,4 +1,5 @@
 import { getUser, setPage, setSession, setSite, setVisitor, updatePreviousSession } from './api';
+import setEventHandlers from './events';
 import { identifyElements, updatePreviousPage, uxkeyConsole } from './tools';
 /**
  * @description Function that initiates the operation of the script by setting the information obtained.
@@ -14,7 +15,7 @@ const initScript = async (apiKey, loadingTimeObject) => {
    const sessionInfo = await setSession(pageInfo, visitorId, loadingTimeObject);
    updatePreviousSession();
    updatePreviousPage(pageInfo, sessionInfo);
-   uxkeyConsole.log(sessionInfo);
+   setEventHandlers(sessionInfo, visitorId, pageInfo);
    uxkeyConsole.ready('UX-Key is ready');
 };
 

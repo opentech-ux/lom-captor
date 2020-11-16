@@ -185,3 +185,18 @@ export const updatePreviousPage = (pageInfo, sessionInfo) => {
    JSCookies.set('ux-key_prev-page', pageInfo._id, { path: '/', expires: 1 });
    JSCookies.set('ux-key_prev-session', sessionInfo._id, { path: '/', expires: 1 });
 };
+
+/**
+ * @description Function for collecting information from two objects.
+ *
+ * @param {Record<string, unknown>} obj Base object.
+ * @param {Record<string, unknown>} src Object with information to be added.
+ * @returns {Record<string, unknown>}
+ */
+export const mergeObjects = (obj, src) => {
+   Object.keys(src).forEach((key) => {
+      // eslint-disable-next-line no-param-reassign
+      if (Object.prototype.hasOwnProperty.call(src, key)) obj[key] = src[key];
+   });
+   return obj;
+};

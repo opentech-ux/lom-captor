@@ -1,7 +1,7 @@
 import JSCookies from 'js-cookie';
 import getDeviceInfo from './device';
 import { GET, PATCH, POST } from './http';
-import { checkUrlParameters, generateDomTree } from './tools';
+import { checkUrlParameters, generateDomTree, mergeObjects } from './tools';
 /**
  * @description URL's host and port (if different from the default port for the scheme).
  */
@@ -31,6 +31,8 @@ const versionOfData = '1.5';
  * @description The current version of the data handled by the script with the prefix of the type of data handled.
  */
 const dataVersion = `${process.env.NODE_ENV === 'development' ? 'dev' : 'prod'}-${versionOfData}`;
+
+let mouseEvents = [];
 
 /**
  * @description Function to obtain information from the user.
@@ -273,4 +275,243 @@ export const updatePreviousSession = async () => {
    } catch (e) {
       return e;
    }
+};
+
+/**
+ * @description Function to create a record in the API events.
+ * @param {import('../../types/EventInfo').EventInfo} eventData New session information.
+ * @returns {Promise<import('../../types/EventResponse').EventResponse>} API response of the new session.
+ */
+export const createEvent = (eventData) =>
+   POST('events', eventData)
+      .then((resp) => resp)
+      .catch((err) => err);
+
+/**
+ * @description Event record creation function.
+ *
+ * @param {(Event | MouseEvent | DragEvent | KeyboardEvent | WheelEvent)} event Event in the DOM to register.
+ * @param {import('../../types/SessionRequestInfo').SessionRequestInfo} sessionInfo Session information obtained or created previously.
+ * @param {string} visitorId ID obtained from the current user.
+ * @param {import('../../types/PageInfo').PageInfo} pageInfo Page information obtained or created previously.
+ * @param {boolean} [mousemove=false] True if it's a mouse movement.
+ * @param {boolean} [mousewait=false] True if it's a mouse wait.
+ * @param {number} [timeBetweenMoves=0] Waiting time between mouse movements.
+ * @returns {(Promise<Record<string, unknown>>|null)}
+ */
+export const setEvent = (
+   event,
+   sessionInfo,
+   visitorId,
+   pageInfo,
+   mousemove = false,
+   mousewait = false,
+   timeBetweenMoves = 0
+) => {
+   let eventDb;
+   let targetRect;
+   let targetElement;
+   // * Information on the position of the element.
+   // @ts-expect-error Type declaration conflict
+   if (event.target.nodeName === '#text') {
+      // @ts-expect-error Type declaration conflict
+      targetRect = event.target.parentElement.getBoundingClientRect();
+      // @ts-expect-error Type declaration conflict
+      targetElement = event.target.parentElement;
+   } else {
+      // @ts-expect-error Type declaration conflict
+      targetRect = event.target.getBoundingClientRect();
+      targetElement = event.target;
+   }
+   // * Information on body position.
+   const bodyRect = document.body.getBoundingClientRect();
+   // * Basic information on the event.
+   const eventInfo = {
+      // @ts-expect-error Type declaration conflict
+      altKey: event.altKey,
+      body: {
+         rectPos: {
+            bottom: bodyRect.bottom,
+            height: bodyRect.height,
+            left: bodyRect.left,
+            right: bodyRect.right,
+            top: bodyRect.top,
+            width: bodyRect.width,
+            x: bodyRect.x,
+            y: bodyRect.y,
+         },
+      },
+      // @ts-expect-error Type declaration conflict
+      ctrlKey: event.ctrlKey,
+      dataVersion,
+      document: {
+         bodyClientHeight: document.body.clientHeight,
+         bodyClientWidth: document.body.clientWidth,
+         documentTitle: document.title,
+      },
+      isTrusted: event.isTrusted,
+      // @ts-expect-error Type declaration conflict
+      shiftKey: event.shiftKey,
+      targetElement: {
+         dataUx: targetElement.dataset.ux || 'NO DATA-UX',
+         height: targetElement.clientHeight,
+         nodeName: targetElement.nodeName,
+         rectPos: {
+            bottom: targetRect.bottom,
+            height: targetRect.height,
+            left: targetRect.left,
+            right: targetRect.right,
+            top: targetRect.top,
+            width: targetRect.width,
+            x: targetRect.x,
+            y: targetRect.y,
+         },
+         // @ts-expect-error Type declaration conflict
+         title: event.target.title,
+         // @ts-expect-error Type declaration conflict
+         width: event.target.clientWidth,
+      },
+      timeStamp: event.timeStamp,
+      type: event.type,
+      visitorId,
+      window: {
+         windowInnerHeight: window.innerHeight,
+         windowInnerWidth: window.innerWidth,
+         windowScrollX: window.scrollX,
+         windowScrollY: window.scrollY,
+      },
+   };
+   // * If the event is of the "mousemove" type.
+   if (mousemove) {
+      // * Basic information on the event.
+      const mousemoveInfo = {
+         // @ts-expect-error Type declaration conflict
+         clientX: event.clientX,
+         // @ts-expect-error Type declaration conflict
+         clientY: event.clientY,
+         // @ts-expect-error Type declaration conflict
+         elementX: event.clientX - targetRect.left,
+         // @ts-expect-error Type declaration conflict
+         elementY: event.clientY - targetRect.top,
+         // @ts-expect-error Type declaration conflict
+         mouseButton: event.button,
+         timeBetweenMoves,
+         interactionType: 'exploration',
+      };
+      // * If the event is of type "mousewait", the type in the object changes.
+      if (mousewait) eventInfo.type = 'mousewait';
+      // * All the information about the event is collected.
+      eventDb = mergeObjects(eventInfo, mousemoveInfo);
+      // * Added to the mousemove events board.
+      mouseEvents.push(eventDb);
+   }
+   // * If the event is of the "mousedown" type (click).
+   if (event.type === 'mousedown') {
+      // * Basic information on the event.
+      const mousedownInfo = {
+         // @ts-expect-error Type declaration conflict
+         clientX: event.clientX,
+         // @ts-expect-error Type declaration conflict
+         clientY: event.clientY,
+         // @ts-expect-error Type declaration conflict
+         elementX: event.clientX - targetRect.left,
+         // @ts-expect-error Type declaration conflict
+         elementY: event.clientY - targetRect.top,
+         // @ts-expect-error Type declaration conflict
+         mouseButton: event.button,
+         interactionType: 'action',
+      };
+      // * All the information about the event is collected.
+      eventDb = mergeObjects(eventInfo, mousedownInfo);
+      // * If the size of the mousemove events table is greater than 0.
+      if (mouseEvents.length > 0)
+         // * Are added to the database.
+         createEvent({
+            fields: {
+               dataVersion,
+               mouseEvents,
+               type: 'mousemove',
+               visitorId,
+            },
+            // @ts-expect-error Type declaration conflict
+            page: pageInfo,
+            session: sessionInfo._id,
+         }).then(() => {
+            // * The array is cleared
+            mouseEvents = [];
+         });
+   }
+   // * If the event is of the "drag and drop" type.
+   if (event.type === 'dragstart' || event.type === 'dragend' || event.type === 'drop') {
+      // * Basic information on the event.
+      const mousedownInfo = {
+         // @ts-expect-error Type declaration conflict
+         clientX: event.clientX,
+         // @ts-expect-error Type declaration conflict
+         clientY: event.clientY,
+         // @ts-expect-error Type declaration conflict
+         elementX: event.clientX - targetRect.left,
+         // @ts-expect-error Type declaration conflict
+         elementY: event.clientY - targetRect.top,
+         interactionType: 'action',
+      };
+      // * All the information about the event is collected.
+      eventDb = mergeObjects(eventInfo, mousedownInfo);
+   }
+   // * If the event is of type "keyup".
+   if (event.type === 'keyup') {
+      // * Basic information on the event.
+      const keyupInfo = {
+         // @ts-expect-error Type declaration conflict
+         key: event.key,
+         // @ts-expect-error Type declaration conflict
+         code: event.code,
+         interactionType: 'action',
+      };
+      // * All the information about the event is collected.
+      eventDb = mergeObjects(eventInfo, keyupInfo);
+   }
+   // * If the event is of the "wheel" (scroll) type.
+   if (event.type === 'wheel') {
+      // * Basic information on the event.
+      const wheelInfo = {
+         // @ts-expect-error Type declaration conflict
+         clientX: event.clientX,
+         // @ts-expect-error Type declaration conflict
+         clientY: event.clientY,
+         // @ts-expect-error Type declaration conflict
+         elementX: event.clientX - targetRect.left,
+         // @ts-expect-error Type declaration conflict
+         elementY: event.clientY - targetRect.top,
+         // @ts-expect-error Type declaration conflict
+         deltaMode: event.deltaMode,
+         // @ts-expect-error Type declaration conflict
+         deltaX: event.deltaX,
+         // @ts-expect-error Type declaration conflict
+         deltaY: event.deltaY,
+         // @ts-expect-error Type declaration conflict
+         deltaZ: event.deltaZ,
+         // @ts-expect-error Type declaration conflict
+         layerX: event.layerX,
+         // @ts-expect-error Type declaration conflict
+         layerY: event.layerY,
+         // @ts-expect-error Type declaration conflict
+         wheelDelta: event.wheelDelta,
+         // @ts-expect-error Type declaration conflict
+         wheelDeltaX: event.wheelDeltaX,
+         // @ts-expect-error Type declaration conflict
+         wheelDeltaY: event.wheelDeltaY,
+         interactionType: 'exploration',
+      };
+      // * All the information about the event is collected.
+      eventDb = mergeObjects(eventInfo, wheelInfo);
+   }
+   // * The event is added to the database.
+   if (sessionInfo)
+      return createEvent({
+         fields: eventDb,
+         page: pageInfo._id,
+         session: sessionInfo._id,
+      });
+   return null;
 };
