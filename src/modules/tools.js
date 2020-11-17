@@ -59,7 +59,7 @@ export const checkUrlParameters = (urlExtension) =>
  * @param {Function} f Function that returns an array with attributes to simplify.
  * @returns {Array}
  */
-const simplifyArray = (array, f) => {
+export const simplifyArray = (array, f) => {
    const groups = {};
    array.forEach((o) => {
       const group = JSON.stringify(f(o));
