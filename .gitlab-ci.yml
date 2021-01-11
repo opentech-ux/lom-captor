@@ -85,7 +85,8 @@ push_repository:
     - git config --global user.name ${CI_PUSH_NAME}
   script:
     - git checkout -B ${CI_COMMIT_REF_NAME}'
-    - git add .
+    - git add dist/
+    - git add dist-dev/
   after_script:
     - git commit -m 'Build complete ($CI_COMMIT_TIMESTAMP)'
     - git push -o ci.skip --follow-tags origin ${CI_COMMIT_REF_NAME}
