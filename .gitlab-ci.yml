@@ -83,9 +83,8 @@ push_repository:
     - git config --global user.email ${CI_PUSH_EMAIL}
     - git config --global user.name '${CI_PUSH_NAME}'
   script:
-    - echo $CI_COMMIT_TIMESTAMP
-    - git checkout -B ${CI_COMMIT_REF_NAME}'
+    - git checkout -B ${CI_COMMIT_REF_NAME}
     - git add --all
   after_script:
-    - git commit -m 'Build complete ($CI_COMMIT_TIMESTAMP)'
+    - git commit -m 'Build complete (${CI_COMMIT_TIMESTAMP})'
     - git push -o ci.skip --follow-tags origin ${CI_COMMIT_REF_NAME}
