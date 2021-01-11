@@ -79,12 +79,12 @@ push_repository:
   stage: deploy
   before_script:
     - git remote set-url origin
-      https://${CI_PUSH_TOKEN}@gitlab.com/ux-key/ux-key-script.git
+      https://${CI_PUSH_USER}:${CI_PUSH_TOKEN}@gitlab.com/ux-key/ux-key-script.git
     - git config --global user.email ${CI_PUSH_EMAIL}
     - git config --global user.name '${CI_PUSH_NAME}'
   script:
     - git checkout -B ${CI_COMMIT_REF_NAME}
     - git add --all
   after_script:
-    - git commit -m 'Build complete (${CI_COMMIT_TIMESTAMP})'
+    - git commit -m 'Build complete ($CI_COMMIT_TIMESTAMP)'
     - git push -o ci.skip --follow-tags origin ${CI_COMMIT_REF_NAME}
