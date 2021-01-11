@@ -6,6 +6,9 @@ stages:
    - build
    - deploy
 
+before_script:
+  - export COMMIT_TIME=$(git show -s --format=%ct $CI_COMMIT_SHA)  
+
 dependencies_install:
    stage: dependencies
    cache:
@@ -78,7 +81,6 @@ build_dev:
 push_repository:
    stage: deploy
    before_script:
-      - export COMMIT_TIME=$(git show -s --format=%ct $CI_COMMIT_SHA)   
       - git remote set-url origin
         https://${CI_PUSH_USER}:${CI_PUSH_TOKEN}@gitlab.com/ux-key/ux-key-script.git
       - git config --global user.email ${CI_PUSH_EMAIL}
