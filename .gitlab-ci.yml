@@ -1,97 +1,95 @@
-image: node:latest
+image: 'node:latest'
 
 stages:
-   - dependencies
-   - test
-   - build
-   - deploy
-
-before_script:
-  - export COMMIT_TIME=$(git show -s --format=%ct $CI_COMMIT_SHA)
-  - echo ${CI_PUSH_USER}
-  - echo ${CI_PUSH_TOKEN}
-  - echo ${CI_PUSH_EMAIL}
-  - echo ${CI_PUSH_NAME}
+  - dependencies
+  - test
+  - build
+  - deploy
 
 dependencies_install:
-   stage: dependencies
-   cache:
-      key: $CI_COMMIT_REF_SLUG-$CI_PROJECT_DIR
-      paths:
-         - node_modules/
-   script:
-      - npm ci
-   only:
-      changes:
-         - package-lock.json
+  stage: dependencies
+  cache:
+    key: $CI_COMMIT_REF_SLUG-$CI_PROJECT_DIR
+    paths:
+      - node_modules/
+  script:
+    - npm ci
+  only:
+    changes:
+      - package-lock.json
 
 test_lint:
-   stage: test
-   cache:
-      key: $CI_COMMIT_REF_SLUG-$CI_PROJECT_DIR
-      paths:
-         - node_modules/
-      policy: pull
-   script: npm run eslint:check
+  stage: test
+  cache:
+    key: $CI_COMMIT_REF_SLUG-$CI_PROJECT_DIR
+    paths:
+      - node_modules/
+    policy: pull
+  script: 'npm run eslint:check'
 
 test_prettier:
-   stage: test
-   cache:
-      key: $CI_COMMIT_REF_SLUG-$CI_PROJECT_DIR
-      paths:
-         - node_modules/
-      policy: pull
-   script: npm run prettier:check
+  stage: test
+  cache:
+    key: $CI_COMMIT_REF_SLUG-$CI_PROJECT_DIR
+    paths:
+      - node_modules/
+    policy: pull
+  script: 'npm run prettier:check'
 
 test_unit:
-   stage: test
-   cache:
-      key: $CI_COMMIT_REF_SLUG-$CI_PROJECT_DIR
-      paths:
-         - node_modules/
-      policy: pull
-   script: npm run test:unit
+  stage: test
+  cache:
+    key: $CI_COMMIT_REF_SLUG-$CI_PROJECT_DIR
+    paths:
+      - node_modules/
+    policy: pull
+  script: 'npm run test:unit'
 
 build_prod:
-   stage: build
-   cache:
-      key: $CI_COMMIT_REF_SLUG-$CI_PROJECT_DIR
-      paths:
-         - node_modules/
-      policy: pull
-   script:
-      - npm run build:prod
-   artifacts:
-      paths:
-         - dist/ux-key-lib.js
-         - dist/ux-key-lib.js.gz
-         - dist/ux-key-lib.js.map
+  stage: build
+  cache:
+    key: $CI_COMMIT_REF_SLUG-$CI_PROJECT_DIR
+    paths:
+      - node_modules/
+    policy: pull
+  script:
+    - 'npm run build:prod'
+  artifacts:
+    paths:
+      - dist/ux-key-lib.js
+      - dist/ux-key-lib.js.gz
+      - dist/ux-key-lib.js.map
 
 build_dev:
-   stage: build
-   cache:
-      key: $CI_COMMIT_REF_SLUG-$CI_PROJECT_DIR
-      paths:
-         - node_modules/
-      policy: pull
-   script:
-      - npm run build:dev
-   artifacts:
-      paths:
-         - dist-dev/ux-key-lib.js
-         - dist-dev/ux-key-lib.js.gz
-         - dist-dev/ux-key-lib.js.map
+  stage: build
+  cache:
+    key: $CI_COMMIT_REF_SLUG-$CI_PROJECT_DIR
+    paths:
+      - node_modules/
+    policy: pull
+  script:
+    - 'npm run build:dev'
+  artifacts:
+    paths:
+      - dist-dev/ux-key-lib.js
+      - dist-dev/ux-key-lib.js.gz
+      - dist-dev/ux-key-lib.js.map
 
 push_repository:
-   stage: deploy
-   before_script:
-      - git remote set-url origin
-        https://${CI_PUSH_USER}:${CI_PUSH_TOKEN}@gitlab.com/ux-key/ux-key-script.git
-      - git config --global user.email ${CI_PUSH_EMAIL}
-      - git config --global user.name ${CI_PUSH_NAME}
-   script:
-      - git checkout -B ${CI_COMMIT_REF_NAME}
-      - git add .
-   after_script:
-      - git commit -m 'Build complete ($COMMIT_TIME)'
-      - git push -o ci.skip --follow-tags origin ${CI_COMMIT_REF_NAME}
+  stage: deploy
+  before_script:
+    - export COMMIT_TIME=$(git show -s --format=%ct $CI_COMMIT_SHA)
+    - 'echo ${CI_PUSH_USER}'
+    - 'echo ${CI_PUSH_TOKEN}'
+    - 'echo ${CI_PUSH_EMAIL}'
+    - 'echo ${CI_PUSH_NAME}'
+    - git remote set-url origin
+      https://${CI_PUSH_USER}:${CI_PUSH_TOKEN}@gitlab.com/ux-key/ux-key-script.git
+    - 'git config --global user.email ${CI_PUSH_EMAIL}'
+    - 'git config --global user.name ${CI_PUSH_NAME}'
+  script:
+    - 'git checkout -B ${CI_COMMIT_REF_NAME}'
+    - git add .
+  after_script:
+    - git commit -m 'Build complete ($COMMIT_TIME)'
+    - 'git push -o ci.skip --follow-tags origin ${CI_COMMIT_REF_NAME}'
