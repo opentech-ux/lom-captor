@@ -78,7 +78,7 @@ build_dev:
 push_repository:
   stage: deploy
   before_script:
-    - export COMMIT_MESSAGE=Build complete (${CI_COMMIT_TIMESTAMP})
+    - export COMMIT_MESSAGE='Build complete (${CI_COMMIT_TIMESTAMP})'
     - echo $COMMIT_MESSAGE
     - git --version
     - git remote set-url origin
