@@ -7,7 +7,11 @@ stages:
    - deploy
 
 before_script:
-  - export COMMIT_TIME=$(git show -s --format=%ct $CI_COMMIT_SHA)  
+  - export COMMIT_TIME=$(git show -s --format=%ct $CI_COMMIT_SHA)
+  - echo ${CI_PUSH_USER}
+  - echo ${CI_PUSH_TOKEN}
+  - echo ${CI_PUSH_EMAIL}
+  - echo ${CI_PUSH_NAME}
 
 dependencies_install:
    stage: dependencies
