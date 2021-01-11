@@ -3,7 +3,7 @@ import { GET, POST } from '../src/modules/http';
 
 global.fetch = require('node-fetch');
 
-jest.setTimeout(120000);
+jest.setTimeout(1000 * 60 * 2);
 
 describe('API testing', () => {
    describe('fetchAPI function', () => {

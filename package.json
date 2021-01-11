@@ -52,7 +52,7 @@
       "eslint:format": "eslint --ext .js,.jsx --ignore-path .gitignore . --fix",
       "prettier:check": "prettier \"./**/*.{js,jsx}\" --ignore-path .gitignore -l ",
       "prettier:format": "prettier \"./**/*.{js,jsx}\" --ignore-path .gitignore -l --write",
-      "test": "jest --verbose"
+      "test:unit": "jest --verbose"
    },
    "version": "1.0.0"
 }
