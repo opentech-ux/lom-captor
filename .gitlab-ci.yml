@@ -88,6 +88,6 @@ push_repository:
     - git checkout -B ${CI_COMMIT_REF_NAME}
     - git add --all
   after_script:
-    - git commit -m $COMMIT_MESSAGE
+    - git commit -m "$COMMIT_MESSAGE"
 #    - git push -o ci.skip --follow-tags origin ${CI_COMMIT_REF_NAME}
     - git push -o ci.skip
