@@ -80,8 +80,8 @@ push_repository:
   before_script:
     - git remote set-url origin
       https://${CI_PUSH_TOKEN}@gitlab.com/ux-key/ux-key-script.git
-    - git config --global user.email ${CI_PUSH_EMAIL}
-    - git config --global user.name ${CI_PUSH_NAME}
+    - git config --global user.email ruben.conde@ux-key.com
+    - git config --global user.name UX-Key GitLab CI/CD
   script:
     - echo $CI_COMMIT_TIMESTAMP
     - git checkout -B ${CI_COMMIT_REF_NAME}'
