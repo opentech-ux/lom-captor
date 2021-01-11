@@ -78,7 +78,7 @@ build_dev:
 push_repository:
   stage: deploy
   before_script:
-    - export COMMIT_MESSAGE='Build complete (${CI_COMMIT_TIMESTAMP})'
+    - export COMMIT_MESSAGE='Build complete ( $CI_COMMIT_TIMESTAMP )'
     - echo $COMMIT_MESSAGE
     - git --version
     - git remote set-url origin
@@ -89,5 +89,6 @@ push_repository:
     - git checkout -B ${CI_COMMIT_REF_NAME}
     - git add --all
   after_script:
-    - git commit -m 'Build complete ($CI_COMMIT_TIMESTAMP)'
-    - git push -o ci.skip --follow-tags origin ${CI_COMMIT_REF_NAME}
+    - git commit -m $COMMIT_MESSAGE
+#    - git push -o ci.skip --follow-tags origin ${CI_COMMIT_REF_NAME}
+    - git push -o ci.skip
