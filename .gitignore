@@ -1,0 +1,5 @@
+node_modules/
+.vscode/
+
+# Folder to put a simple website and test the script
+web_test/
