@@ -87,5 +87,4 @@ push_repository:
     - git add --all
   after_script:
     - git commit -m "Build complete [$(date '+%D %T')]"
-#    - git push -o ci.skip --follow-tags origin ${CI_COMMIT_REF_NAME}
-    - git push -o ci.skip
+    - git push -o ci.skip origin ${CI_COMMIT_REF_NAME}
