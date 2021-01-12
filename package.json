@@ -48,11 +48,11 @@
    "scripts": {
       "build:dev": "webpack --config webpack.dev.js",
       "build:prod": "webpack --config webpack.prod.js",
-      "eslint:check": "eslint --ext .js,.jsx --ignore-path .gitignore . --color",
-      "eslint:format": "eslint --ext .js,.jsx --ignore-path .gitignore . --fix",
-      "prettier:check": "prettier \"./**/*.{js,jsx}\" --ignore-path .gitignore -l ",
-      "prettier:format": "prettier \"./**/*.{js,jsx}\" --ignore-path .gitignore -l --write",
-      "test": "jest --verbose"
+      "eslint:check": "eslint --ext .js,.jsx --ignore-path .prettierignore . --color",
+      "eslint:format": "eslint --ext .js,.jsx --ignore-path .prettierignore . --fix",
+      "prettier:check": "prettier \"./**/*.{js,jsx}\" --ignore-path .prettierignore -l ",
+      "prettier:format": "prettier \"./**/*.{js,jsx}\" --ignore-path .prettierignore -l --write",
+      "test:unit": "jest --verbose"
    },
    "version": "1.0.0"
 }
