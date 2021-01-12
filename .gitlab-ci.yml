@@ -78,8 +78,6 @@ build_dev:
 push_repository:
   stage: deploy
   before_script:
-    - export COMMIT_MESSAGE="Build complete [$(date '+%D %T')]"
-    - echo $COMMIT_MESSAGE
     - git remote set-url origin
       https://${CI_PUSH_USER}:${CI_PUSH_TOKEN}@gitlab.com/ux-key/ux-key-script.git
     - git config --global user.email ${CI_PUSH_EMAIL}
@@ -88,6 +86,6 @@ push_repository:
     - git checkout -B ${CI_COMMIT_REF_NAME}
     - git add --all
   after_script:
-    - git commit -m "$COMMIT_MESSAGE"
+    - git commit -m "Build complete [$(date '+%D %T')]"
 #    - git push -o ci.skip --follow-tags origin ${CI_COMMIT_REF_NAME}
     - git push -o ci.skip
