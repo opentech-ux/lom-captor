@@ -1,4 +1,4 @@
-image: 'node:latest'
+image: 'node:lts-alpine'
 
 stages:
   - dependencies
@@ -86,5 +86,5 @@ push_repository:
     - git checkout -B ${CI_COMMIT_REF_NAME}
     - git add --all
   after_script:
-    - git commit -m "Build complete [$(date '+%D %T')]"
+    - git commit -m "Build complete [$(date '+%d/%m/%y %T')]"
     - git push -o ci.skip origin ${CI_COMMIT_REF_NAME}
