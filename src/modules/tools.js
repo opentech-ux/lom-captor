@@ -39,7 +39,7 @@ export const isBetween = (number, limitA, limitB) => (number - limitA) * (number
 
 /**
  * @description Each section (delimited by a slash "/") of the hash or path is checked for any alphanumeric character.
- * If found, it is replaced by the text: "{paremeter}".
+ * If found, it is replaced by the text: "{parameter}".
  * @param {string} urlExtension Extension of the URL where the page is identified.
  * @returns {string} The same extension of the URL but with the identification parameters replaced by the text: "{parameter}".
  *
@@ -68,11 +68,9 @@ export const simplifyArray = (array, f) => {
       o.numberTimes = groups[group].length + 1;
       groups[group].push(o);
    });
-   return Object.keys(groups).map((group) => {
-      return groups[group].filter((ele) => {
-         return ele.numberTimes === groups[group].length;
-      });
-   });
+   return Object.keys(groups).map((group) =>
+      groups[group].filter((ele) => ele.numberTimes === groups[group].length)
+   );
 };
 
 /**
@@ -168,7 +166,6 @@ export const identifyElements = (element) => {
       for (let i = 0; i < children.length; i += 1) {
          const child = children[i];
          if (filter.indexOf(child.nodeName) === -1) {
-            // @ts-ignore
             identifyElements(child);
          }
       }
