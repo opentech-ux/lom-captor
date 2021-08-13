@@ -3,10 +3,11 @@ import setEventHandlers from './events';
 import { identifyElements, updatePreviousPage, uxkeyConsole } from './tools';
 /**
  * @description Function that initiates the operation of the script by setting the information obtained.
- * @param {string} apiKey UX-Key User API Key.
+ * @param {import('../../types/ScriptConfig').ScriptConfig} config Configuration for the script init.
  * @param {Record<string, number>} loadingTimeObject UX-Key User API Key.
  */
-const initScript = async (apiKey, loadingTimeObject) => {
+const initScript = async (config, loadingTimeObject) => {
+   const { apiKey, endpoint } = config;
    identifyElements(document.body);
    const userInfo = await getUser(apiKey);
    const siteInfo = await setSite(userInfo);
