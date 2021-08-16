@@ -74,6 +74,26 @@ export const simplifyArray = (array, f) => {
 };
 
 /**
+ *
+ *
+ * @returns {string}
+ */
+export const getPageName = () => {
+   /**
+    * @description URL's fragment (includes leading "#" if non-empty).
+    */
+   const pageHash = window.location.hash;
+   /**
+    * @description URL's path.
+    */
+   const pagePath = window.location.pathname;
+
+   if (pagePath === '/' && pageHash === '') return '';
+
+   return `${pagePath}${pageHash}`;
+};
+
+/**
  * @description Function to create an object of the elements in the DOM of the page.
  *
  * @param {(Element | HTMLElement)} element Element from which to create the object.
@@ -83,39 +103,30 @@ export const generateDomTree = (element) => {
    const children = [];
    const elementRect = element.getBoundingClientRect();
    const nodeNameFilter = ['HEAD', 'SCRIPT', 'svg', 'symbol', 'defs', 'path'];
+
    const elementInfo = {
       children: [],
-      clientHeight: element.clientHeight,
-      clientWidth: element.clientWidth,
-      // @ts-expect-error Type conflict
-      dataUx: element.dataset.ux || 'NO DATA-UX',
-      nodeName: element.nodeName,
-      rectPos: {
-         bottom: elementRect.bottom,
+      bounds: {
+         // bottom: elementRect.bottom,
          height: elementRect.height,
-         left: elementRect.left,
-         right: elementRect.right,
-         top: elementRect.top,
+         // left: elementRect.left,
+         // right: elementRect.right,
+         // top: elementRect.top,
          width: elementRect.width,
          x: elementRect.x,
          y: elementRect.y,
       },
-      scrollHeight: element.scrollHeight,
-      scrollWidth: element.scrollWidth,
-      // @ts-expect-error Type conflict
-      title: element.title,
+      uxId: element.dataset.uxId || null,
    };
+
    if (element.children.length !== 0) {
       Array.from(element.children).forEach((el) => {
          if (nodeNameFilter.indexOf(el.nodeName) === -1) {
             children.push(generateDomTree(el));
          }
       });
-
-      simplifyArray(children, (item) => [item.nodeName, item.children]).forEach((simpleArray) =>
-         simpleArray.forEach((el) => elementInfo.children.push(el))
-      );
    }
+
    return elementInfo;
 };
 
@@ -159,8 +170,8 @@ const getElementXPath = (elt) => {
 export const identifyElements = (element) => {
    const filter = ['HEAD', 'SCRIPT', 'svg', 'symbol', 'defs', 'path'];
    const xPath = getElementXPath(element);
-   const uxId = btoa(xPath + element.id);
-   element.setAttribute('data-ux', uxId);
+   const uxId = btoa(`${xPath}${element.id}`);
+   element.setAttribute('data-ux-id', uxId);
    if (element.hasChildNodes()) {
       const children = Array.from(element.children);
       for (let i = 0; i < children.length; i += 1) {
