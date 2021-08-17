@@ -76,5 +76,43 @@ jobs:
               key: v1-npm-deps-${{ hashFiles('**/package-lock.json') }}
          - name: Development build
            run: npm run build:dev
+         - name: Development upload
+           uses: actions/upload-artifact@v2
+           with:
+              name: dist-dev
+              path: dist-dev
          - name: Production build
            run: npm run build:prod
+         - name: Production upload
+           uses: actions/upload-artifact@v2
+           with:
+              name: dist
+              path: dist
+
+   deploy:
+      needs: [dependencies, test]
+      runs-on: ubuntu-latest
+      strategy:
+         matrix:
+            node-version: [14]
+      steps:
+         env:
+            CI_PUSH_EMAIL: ${{secrets.CI_PUSH_EMAIL}}
+         - uses: actions/checkout@v2
+         - name: Git configuration
+           run: git config --global user.email $CI_PUSH_EMAIL
+           run: git config --global user.name "Opentech UX Github Actions"
+         - name: Development download
+           uses: actions/download-artifact@v2
+           with:
+              name: dist-dev
+         - name: Production download
+           uses: actions/download-artifact@v2
+           with:
+              name: dist
+         - name: Git commands
+           run: git checkout -B $GITHUB_REF
+           run: git add --all
+         - name: Git push
+           run: git commit -m "Build complete [$(date '+%d/%m/%y %T')] [skip actions]"
+           run: git push
