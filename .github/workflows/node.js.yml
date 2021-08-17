@@ -24,8 +24,14 @@ jobs:
               cache: 'npm'
          - name: Install
          - run: npm ci
+         - name: Cache node modules
+            uses: actions/cache@v2
+            with:
+               path: ~/.npm
+               key: v1-npm-deps-${{ hashFiles('**/package-lock.json') }}
+               restore-keys: v1-npm-deps-
 
-   tests:
+   test:
       needs: dependencies
       runs-on: ubuntu-latest
       strategy:
@@ -46,7 +52,7 @@ jobs:
          - run: npm run test:unit
 
    build:
-      needs: dependencies
+      needs: [dependencies, test]
       runs-on: ubuntu-latest
       strategy:
          matrix:
