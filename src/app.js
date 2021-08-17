@@ -2,18 +2,6 @@
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import initScript from './modules/init';
-import { getParameterByName } from './modules/tools';
-
-/**
- * @description Object to specify the time of the page states.
- * @type {Record<string, number>}
- */
-const loadingTime = { loading: 0 };
-
-/**
- * @description Chronological value of the time when the script is executed.
- */
-const startTime = Date.now();
 
 /**
  * @description List of the "script" tags in the HTML document.
@@ -21,42 +9,29 @@ const startTime = Date.now();
 const scripts = document.getElementsByTagName('script');
 
 /**
- * @description Finds the current script tag.
- * @param {HTMLScriptElement} el
- */
-const findCurrentScript = (el) => el.src.indexOf('ux-key-lib.js') >= 0;
-
-/**
  * @description Value of the "src" attribute of the last script (usually the execution script) in the list of scripts
  * @type {HTMLScriptElement}
  */
-const currentScript = Array.prototype.filter.call(scripts, findCurrentScript)[0];
-
-/**
- * @description UX-Key user API key obtained through the script url.
- * @type {string | null}
- */
-const urlApiKey = getParameterByName('apiKey', currentScript.src);
+const currentScript = document.currentScript;
 
 /**
  * @description URL where to send the JSON result
  * @type {string | null}
  */
-const urlEndpoint = getParameterByName('endpoint', currentScript.src);
+const urlEndpoint = currentScript.dataset.endpoint;
 
 /**
  * @description Configuration object
- * @type {import('../types/ScriptConfig').ScriptConfig}
+ * @type {ScriptConfiguration}
  */
-const urlConfig = { apiKey: urlApiKey, endpoint: urlEndpoint };
+const urlConfig = { endpoint: urlEndpoint };
 
 /**
  * @description Function to manually start UX-Key script monitoring operation.
- * @param {import('../../types/ScriptConfig').ScriptConfig} config Configuration for the script init.
+ * @param {ScriptConfiguration} config Configuration for the script init.
  */
-export const start = (config) => initScript(config, loadingTime);
+export const start = (config) => initScript(config);
 
 document.onreadystatechange = async () => {
-   loadingTime[document.readyState] = Date.now() - startTime;
-   if (document.readyState === 'complete' && urlApiKey) initScript(urlConfig, loadingTime);
+   if (document.readyState === 'complete') initScript(urlConfig);
 };
