@@ -22,8 +22,8 @@ const addLinkToElement = (lomObject, linkPageName, pageChangeElementID) => {
 
 const setLoms = () => {
    const currentLom = generateDomTree(document.body);
-   const previousLom = localStorage.getItem('previousLom');
-   const sessionData = localStorage.getItem('sessionData');
+   const previousLom = JSON.parse(localStorage.getItem('previousLom'));
+   const sessionData = JSON.parse(localStorage.getItem('sessionData'));
    const pageName = getPageName();
 
    if (previousLom) {
