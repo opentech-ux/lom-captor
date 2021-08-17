@@ -95,9 +95,9 @@ jobs:
       strategy:
          matrix:
             node-version: [14]
-      steps:
-         env:
+      env:
             CI_PUSH_EMAIL: ${{secrets.CI_PUSH_EMAIL}}
+      steps:
          - uses: actions/checkout@v2
          - name: Git configuration
            run: git config --global user.email $CI_PUSH_EMAIL
