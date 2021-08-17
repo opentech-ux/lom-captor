@@ -1,0 +1,39 @@
+name: Node.js CI
+
+on:
+   push:
+      branches: [simulation-rebuild]
+   pull_request:
+      branches: [simulation-rebuild]
+   workflow_dispatch:
+      branches: [simulation-rebuild]
+
+jobs:
+   dependencies:
+      name: Dependencies install
+
+      runs-on: ${{ matrix.os }}
+
+      strategy:
+         fail-fast: false
+         matrix:
+            pnpm:
+               - 4.11.1
+            os:
+               - ubuntu-latest
+               - macos-latest
+               - windows-latest
+
+      steps:
+         - uses: actions/checkout@v2
+
+         - name: Run the action
+           uses: ./
+           with:
+              version: 4.11.1
+
+         - name: 'Test: which'
+           run: which pnpm; which pnpx
+
+         - name: 'Test: install'
+           run: pnpm install
