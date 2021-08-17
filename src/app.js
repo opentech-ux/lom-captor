@@ -1,30 +1,20 @@
+/* eslint-disable prefer-destructuring */
 /* eslint-disable import/prefer-default-export */
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import initScript from './modules/init';
 
 /**
- * @description List of the "script" tags in the HTML document.
- */
-const scripts = document.getElementsByTagName('script');
-
-/**
- * @description Value of the "src" attribute of the last script (usually the execution script) in the list of scripts
+ * @description Script where this code is being executed.
  * @type {HTMLScriptElement}
  */
 const currentScript = document.currentScript;
 
 /**
- * @description URL where to send the JSON result
- * @type {string | null}
- */
-const urlEndpoint = currentScript.dataset.endpoint;
-
-/**
- * @description Configuration object
+ * @description Configuration for the script init.
  * @type {ScriptConfiguration}
  */
-const urlConfig = { endpoint: urlEndpoint };
+const urlConfig = { endpoint: currentScript.dataset.endpoint };
 
 /**
  * @description Function to manually start UX-Key script monitoring operation.
