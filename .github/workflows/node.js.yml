@@ -44,6 +44,11 @@ jobs:
            with:
               node-version: ${{ matrix.node-version }}
               cache: 'npm'
+         - name: Cache node modules
+           uses: actions/cache@v2
+           with:
+              path: ~/.npm
+              key: v1-npm-deps-${{ hashFiles('**/package-lock.json') }}
          - name: ESLint
            run: npm run eslint:check
          - name: Prettier
@@ -64,6 +69,11 @@ jobs:
            with:
               node-version: ${{ matrix.node-version }}
               cache: 'npm'
+         - name: Cache node modules
+           uses: actions/cache@v2
+           with:
+              path: ~/.npm
+              key: v1-npm-deps-${{ hashFiles('**/package-lock.json') }}
          - name: Development build
            run: npm run build:dev
          - name: Production build
