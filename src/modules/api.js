@@ -1,6 +1,8 @@
 /* eslint-disable import/prefer-default-export */
 
 export const setSession = async () => {
+   const sessionData = JSON.parse(localStorage.getItem('sessionData'));
+
    /**
     * @description Complete session information.
     */
@@ -11,5 +13,5 @@ export const setSession = async () => {
       rootPath: '/',
    };
 
-   localStorage.setItem('sessionData', JSON.stringify(sessionInfo));
+   if (!sessionData) localStorage.setItem('sessionData', JSON.stringify(sessionInfo));
 };

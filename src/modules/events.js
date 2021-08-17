@@ -20,7 +20,7 @@ const addLinkToElement = (lomObject, linkPageName, pageChangeElementID) => {
    }
 };
 
-const setLoms = () => {
+export const setLoms = () => {
    const currentLom = generateDomTree(document.body);
    const previousLom = JSON.parse(localStorage.getItem('previousLom'));
    const sessionData = JSON.parse(localStorage.getItem('sessionData'));
@@ -31,6 +31,7 @@ const setLoms = () => {
       const pageChangeElementID = localStorage.getItem('pageChangeElementID');
       addLinkToElement(previousLom, pageName, pageChangeElementID);
       sessionData.loms[previousPageName] = previousLom;
+      localStorage.setItem('sessionData', JSON.stringify(sessionData));
    }
 
    localStorage.setItem('previousPageName', pageName);
@@ -45,8 +46,6 @@ const setLoms = () => {
  * @param {import('../../types/PageInfo').PageInfo} pageInfo Page information obtained or created previously.
  */
 const setEventHandlers = () => {
-   document.body.addEventListener('load', () => setLoms(), false);
-
    document.body.addEventListener('mousedown', (event) => saveLastMouseDown(event), false);
 };
 

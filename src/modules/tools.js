@@ -100,7 +100,6 @@ export const getPageName = () => {
  * @returns {Record<string,unknown>}
  */
 export const generateDomTree = (element) => {
-   const children = [];
    const elementRect = element.getBoundingClientRect();
    const nodeNameFilter = ['HEAD', 'SCRIPT', 'svg', 'symbol', 'defs', 'path'];
 
@@ -122,7 +121,7 @@ export const generateDomTree = (element) => {
    if (element.children.length !== 0) {
       Array.from(element.children).forEach((el) => {
          if (nodeNameFilter.indexOf(el.nodeName) === -1) {
-            children.push(generateDomTree(el));
+            elementInfo.children.push(generateDomTree(el));
          }
       });
    }
