@@ -23,7 +23,7 @@ jobs:
               node-version: ${{ matrix.node-version }}
               cache: 'npm'
          - name: Install
-         - run: npm ci
+           run: npm ci
          - name: Cache node modules
            uses: actions/cache@v2
            with:
@@ -45,11 +45,11 @@ jobs:
               node-version: ${{ matrix.node-version }}
               cache: 'npm'
          - name: ESLint
-         - run: npm run eslint:check
+           run: npm run eslint:check
          - name: Prettier
-         - run: npm run prettier:check
+           run: npm run prettier:check
          - name: Unit test
-         - run: npm run test:unit
+           run: npm run test:unit
 
    build:
       needs: [dependencies, test]
@@ -65,6 +65,6 @@ jobs:
               node-version: ${{ matrix.node-version }}
               cache: 'npm'
          - name: Development build
-         - run: npm run build:dev
+           run: npm run build:dev
          - name: Production build
-         - run: npm run build:prod
+           run: npm run build:prod
