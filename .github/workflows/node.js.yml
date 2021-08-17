@@ -25,11 +25,11 @@ jobs:
          - name: Install
          - run: npm ci
          - name: Cache node modules
-            uses: actions/cache@v2
-            with:
-               path: ~/.npm
-               key: v1-npm-deps-${{ hashFiles('**/package-lock.json') }}
-               restore-keys: v1-npm-deps-
+           uses: actions/cache@v2
+           with:
+              path: ~/.npm
+              key: v1-npm-deps-${{ hashFiles('**/package-lock.json') }}
+              restore-keys: v1-npm-deps-
 
    test:
       needs: dependencies
