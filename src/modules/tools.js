@@ -2,6 +2,14 @@
 import { encode } from 'js-base64';
 
 /**
+ * @description Function to verify if a given number is within the range of two other numbers.
+ * @param {number} number Number to compare.
+ * @param {number} limitA First limit.
+ * @param {number} limitB Last limit.
+ */
+export const isBetween = (number, limitA, limitB) => (number - limitA) * (number - limitB) <= 0;
+
+/**
  * @description Function to get the page name for the json file
  *
  * @returns {string} Page name

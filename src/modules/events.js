@@ -1,4 +1,5 @@
 /* eslint-disable no-param-reassign */
+import { sendData } from './http';
 import { generateDomTree, getPageName } from './tools';
 
 /**
@@ -20,7 +21,12 @@ const addLinkToElement = (lomObject, linkPageName, pageChangeElementID) => {
    }
 };
 
-export const setLoms = () => {
+/**
+ *
+ *
+ * @param {ScriptConfiguration} scriptConfig
+ */
+export const setLoms = (scriptConfig) => {
    const currentLom = generateDomTree(document.body);
    const previousLom = JSON.parse(localStorage.getItem('previousLom'));
    const sessionData = JSON.parse(localStorage.getItem('sessionData'));
@@ -32,6 +38,7 @@ export const setLoms = () => {
       addLinkToElement(previousLom, pageName, pageChangeElementID);
       sessionData.loms[previousPageName] = previousLom;
       localStorage.setItem('sessionData', JSON.stringify(sessionData));
+      sendData(scriptConfig);
    }
 
    localStorage.setItem('previousPageName', pageName);
@@ -40,13 +47,7 @@ export const setLoms = () => {
 
 /**
  * @description Management function for events to be monitored.
- *
- * @param {import('../../types/SessionRequestInfo').SessionRequestInfo} sessionInfo Session information obtained or created previously.
- * @param {string} visitorId ID obtained from the current visitor.
- * @param {import('../../types/PageInfo').PageInfo} pageInfo Page information obtained or created previously.
  */
-const setEventHandlers = () => {
+export const setEventHandlers = () => {
    document.body.addEventListener('mousedown', (event) => saveLastMouseDown(event), false);
 };
-
-export default setEventHandlers;

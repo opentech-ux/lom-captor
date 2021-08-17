@@ -1,3 +1,4 @@
 declare interface ScriptConfiguration {
-    endpoint: string;
+   customAttribute: string;
+   endpoint: string;
 }

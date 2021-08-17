@@ -2,7 +2,7 @@
 /* eslint-disable import/prefer-default-export */
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
-import initScript from './modules/init';
+import { initScript } from './modules/init';
 
 /**
  * @description Script where this code is being executed.
@@ -14,7 +14,10 @@ const currentScript = document.currentScript;
  * @description Configuration for the script init.
  * @type {ScriptConfiguration}
  */
-const urlConfig = { endpoint: currentScript.dataset.endpoint };
+const urlConfig = {
+   customAttribute: currentScript.dataset.customAttribute,
+   endpoint: currentScript.dataset.endpoint,
+};
 
 /**
  * @description Function to manually start UX-Key script monitoring operation.

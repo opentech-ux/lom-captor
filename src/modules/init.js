@@ -1,6 +1,7 @@
+/* eslint-disable import/prefer-default-export */
 import consola from 'consola';
 import { setSession } from './api';
-import setEventHandlers, { setLoms } from './events';
+import { setEventHandlers, setLoms } from './events';
 import { identifyElements } from './tools';
 
 /**
@@ -8,13 +9,12 @@ import { identifyElements } from './tools';
  *
  * @param {ScriptConfiguration} config Configuration for the script init.
  */
-const initScript = (config) => {
-   consola.log(config.endpoint);
-   identifyElements(document.body);
-   setSession();
-   setLoms();
-   setEventHandlers();
-   consola.ready('Ready');
+export const initScript = (scriptConfig) => {
+   if (scriptConfig.endpoint) {
+      identifyElements(document.body);
+      setSession();
+      setLoms(scriptConfig);
+      setEventHandlers();
+      consola.ready('Ready');
+   }
 };
-
-export default initScript;
