@@ -135,11 +135,9 @@ jobs:
               path: dist
 
          - name: Git commit
-           if: steps.changed-files.outputs.any_changed == 'true'
            run: |
               git add --all
               git diff-index --quiet HEAD || git commit -m "Build complete [$(date '+%d/%m/%y %T')] [skip actions]"
 
          - name: Git push
-           if: steps.changed-files.outputs.any_changed == 'true'
            run: git push
