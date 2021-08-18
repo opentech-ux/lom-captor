@@ -134,15 +134,11 @@ jobs:
               name: dist
               path: dist
 
-         - name: Get changed files
-           id: changed-files
-           uses: tj-actions/changed-files@v1.0.0
-
          - name: Git commit
            if: steps.changed-files.outputs.any_changed == 'true'
            run: |
               git add --all
-              git commit -m "Build complete [$(date '+%d/%m/%y %T')] [skip actions]"
+              git diff-index --quiet HEAD || git commit -m "Build complete [$(date '+%d/%m/%y %T')] [skip actions]"
 
          - name: Git push
            if: steps.changed-files.outputs.any_changed == 'true'
