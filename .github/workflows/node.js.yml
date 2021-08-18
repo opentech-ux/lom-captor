@@ -22,7 +22,13 @@ jobs:
            with:
               node-version: ${{ matrix.node-version }}
               cache: 'npm'
+         - name: Verify package-lock.json
+           id: changed-package-lock
+           uses: tj-actions/changed-files@v1.0.0
+           with:
+              files: package-lock.json
          - name: Install
+           if: steps.changed-package-lock.outputs.any_changed == 'true'
            run: npm ci
          - name: Cache node modules
            uses: actions/cache@v2
