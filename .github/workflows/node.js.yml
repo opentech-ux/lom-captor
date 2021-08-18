@@ -5,9 +5,9 @@ name: Node.js CI
 
 on:
    push:
-      branches: [simulation-rebuild]
+      branches: [dev]
    pull_request:
-      branches: [simulation-rebuild]
+      branches: [dev]
 
 jobs:
    dependencies:
@@ -24,7 +24,7 @@ jobs:
               node-version: ${{ matrix.node-version }}
               cache: 'npm'
 
-         - name: Cache node modules
+         - name: Cache node_modules
            id: node-cache
            uses: actions/cache@v2
            with:
@@ -50,7 +50,7 @@ jobs:
               node-version: ${{ matrix.node-version }}
               cache: 'npm'
 
-         - name: Cache node modules
+         - name: Cache node_modules
            uses: actions/cache@v2
            with:
               path: node_modules
@@ -80,7 +80,7 @@ jobs:
               node-version: ${{ matrix.node-version }}
               cache: 'npm'
 
-         - name: Cache node modules
+         - name: Cache node_modules
            uses: actions/cache@v2
            with:
               path: node_modules
@@ -131,9 +131,6 @@ jobs:
            with:
               name: dist
               path: dist
-
-         - name: Git status
-           run: git status
 
          - name: Git commit
            run: |
