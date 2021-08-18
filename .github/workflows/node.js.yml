@@ -17,27 +17,23 @@ jobs:
             node-version: [14]
       steps:
          - uses: actions/checkout@v2
-           with:
-              fetch-depth: 0
+
          - name: Use Node.js ${{ matrix.node-version }}
            uses: actions/setup-node@v2
            with:
               node-version: ${{ matrix.node-version }}
               cache: 'npm'
-         - name: Verify package-lock.json
-           id: changed-package-lock
-           uses: tj-actions/changed-files@v1.0.0
-           with:
-              files: package-lock.json
-         - name: Install
-           if: steps.changed-package-lock.outputs.any_changed == 'true'
-           run: npm ci
+
          - name: Cache node modules
+           id: node-cache
            uses: actions/cache@v2
            with:
               path: node_modules
-              key: npm-deps-${{ hashFiles('**/package-lock.json') }}
-              restore-keys: npm-deps-
+              key: ${{ runner.os }}-npm-deps-${{ hashFiles('**/package-lock.json') }}
+
+         - name: Install
+           if: steps.node-cache.outputs.cache-hit != 'true'
+           run: npm install
 
    test:
       needs: dependencies
@@ -47,20 +43,25 @@ jobs:
             node-version: [14]
       steps:
          - uses: actions/checkout@v2
+
          - name: Use Node.js ${{ matrix.node-version }}
            uses: actions/setup-node@v2
            with:
               node-version: ${{ matrix.node-version }}
               cache: 'npm'
+
          - name: Cache node modules
            uses: actions/cache@v2
            with:
               path: node_modules
-              key: npm-deps-${{ hashFiles('**/package-lock.json') }}
+              key: ${{ runner.os }}-npm-deps-${{ hashFiles('**/package-lock.json') }}
+
          - name: ESLint
            run: npm run eslint:check
+
          - name: Prettier
            run: npm run prettier:check
+
          - name: Unit test
            run: npm run test:unit
 
@@ -72,25 +73,31 @@ jobs:
             node-version: [14]
       steps:
          - uses: actions/checkout@v2
+
          - name: Use Node.js ${{ matrix.node-version }}
            uses: actions/setup-node@v2
            with:
               node-version: ${{ matrix.node-version }}
               cache: 'npm'
+
          - name: Cache node modules
            uses: actions/cache@v2
            with:
               path: node_modules
-              key: npm-deps-${{ hashFiles('**/package-lock.json') }}
+              key: ${{ runner.os }}-npm-deps-${{ hashFiles('**/package-lock.json') }}
+
          - name: Development build
            run: npm run build:dev
+
          - name: Development upload
            uses: actions/upload-artifact@v2
            with:
               name: dist-dev
               path: dist-dev
+
          - name: Production build
            run: npm run build:prod
+
          - name: Production upload
            uses: actions/upload-artifact@v2
            with:
@@ -107,21 +114,26 @@ jobs:
          CI_PUSH_EMAIL: ${{secrets.CI_PUSH_EMAIL}}
       steps:
          - uses: actions/checkout@v2
+
          - name: Git configuration
            run: |
               git config --global user.email $CI_PUSH_EMAIL
               git config --global user.name "Opentech UX Github Actions"
+
          - name: Development download
            uses: actions/download-artifact@v2
            with:
               name: dist-dev
+
          - name: Production download
            uses: actions/download-artifact@v2
            with:
               name: dist
+
          - name: Git commit
            run: |
               git add --all
               git commit -m "Build complete [$(date '+%d/%m/%y %T')] [skip actions]"
+
          - name: Git push
            run: git push
