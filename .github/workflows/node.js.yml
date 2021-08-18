@@ -96,12 +96,13 @@ jobs:
          matrix:
             node-version: [14]
       env:
-            CI_PUSH_EMAIL: ${{secrets.CI_PUSH_EMAIL}}
+         CI_PUSH_EMAIL: ${{secrets.CI_PUSH_EMAIL}}
       steps:
          - uses: actions/checkout@v2
          - name: Git configuration
-           run: git config --global user.email $CI_PUSH_EMAIL
-           run: git config --global user.name "Opentech UX Github Actions"
+           run: |
+              git config --global user.email $CI_PUSH_EMAIL
+              git config --global user.name "Opentech UX Github Actions"
          - name: Development download
            uses: actions/download-artifact@v2
            with:
@@ -111,8 +112,10 @@ jobs:
            with:
               name: dist
          - name: Git commands
-           run: git checkout -B $GITHUB_REF
-           run: git add --all
+           run: |
+              git checkout -B $GITHUB_REF
+              git add --all
          - name: Git push
-           run: git commit -m "Build complete [$(date '+%d/%m/%y %T')] [skip actions]"
-           run: git push
+           run: |
+              git commit -m "Build complete [$(date '+%d/%m/%y %T')] [skip actions]"
+              git push
