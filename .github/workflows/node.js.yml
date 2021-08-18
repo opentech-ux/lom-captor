@@ -17,6 +17,8 @@ jobs:
             node-version: [14]
       steps:
          - uses: actions/checkout@v2
+           with:
+              fetch-depth: 0
          - name: Use Node.js ${{ matrix.node-version }}
            uses: actions/setup-node@v2
            with:
@@ -34,8 +36,8 @@ jobs:
            uses: actions/cache@v2
            with:
               path: node_modules
-              key: v1-npm-deps-${{ hashFiles('**/package-lock.json') }}
-              restore-keys: v1-npm-deps-
+              key: npm-deps-${{ hashFiles('**/package-lock.json') }}
+              restore-keys: npm-deps-
 
    test:
       needs: dependencies
@@ -54,7 +56,7 @@ jobs:
            uses: actions/cache@v2
            with:
               path: node_modules
-              key: v1-npm-deps-${{ hashFiles('**/package-lock.json') }}
+              key: npm-deps-${{ hashFiles('**/package-lock.json') }}
          - name: ESLint
            run: npm run eslint:check
          - name: Prettier
@@ -79,7 +81,7 @@ jobs:
            uses: actions/cache@v2
            with:
               path: node_modules
-              key: v1-npm-deps-${{ hashFiles('**/package-lock.json') }}
+              key: npm-deps-${{ hashFiles('**/package-lock.json') }}
          - name: Development build
            run: npm run build:dev
          - name: Development upload
