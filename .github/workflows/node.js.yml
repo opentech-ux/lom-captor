@@ -90,7 +90,7 @@ jobs:
               path: dist
 
    deploy:
-      needs: [dependencies, test]
+      needs: [dependencies, test, build]
       runs-on: ubuntu-latest
       strategy:
          matrix:
