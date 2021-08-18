@@ -143,11 +143,11 @@ jobs:
                  dist-dev
 
          - name: Git commit
-           if: steps.changed-files-specific.outputs.any_changed == 'true'
+           if: steps.changed-files.outputs.any_changed == 'true'
            run: |
               git add --all
               git commit -m "Build complete [$(date '+%d/%m/%y %T')] [skip actions]"
 
          - name: Git push
-           if: steps.changed-files-specific.outputs.any_changed == 'true'
+           if: steps.changed-files.outputs.any_changed == 'true'
            run: git push
