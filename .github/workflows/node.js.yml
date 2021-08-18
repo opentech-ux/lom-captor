@@ -114,6 +114,8 @@ jobs:
          CI_PUSH_EMAIL: ${{secrets.CI_PUSH_EMAIL}}
       steps:
          - uses: actions/checkout@v2
+           with:
+              fetch-depth: 0
 
          - name: Git configuration
            run: |
