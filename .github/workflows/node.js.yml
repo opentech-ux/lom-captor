@@ -93,7 +93,7 @@ jobs:
            uses: actions/upload-artifact@v2
            with:
               name: dist-dev
-              path: dist-dev
+              path: dist-dev/
 
          - name: Production build
            run: npm run build:prod
@@ -102,7 +102,7 @@ jobs:
            uses: actions/upload-artifact@v2
            with:
               name: dist
-              path: dist
+              path: dist/
 
    deploy:
       needs: [dependencies, test, build]
@@ -124,11 +124,16 @@ jobs:
            uses: actions/download-artifact@v2
            with:
               name: dist-dev
+              path: dist-dev
 
          - name: Production download
            uses: actions/download-artifact@v2
            with:
               name: dist
+              path: dist
+
+         - name: Git status
+           run: git status
 
          - name: Git commit
            run: |
