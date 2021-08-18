@@ -36,7 +36,7 @@ module.exports = {
       ],
    },
    output: {
-      filename: 'opentech-ux-lib.js',
+      filename: 'opentech-ux-lib-dev.js',
       library: 'OpentechUX',
       path: path.resolve(__dirname, 'dist-dev'),
       libraryTarget: 'umd',
