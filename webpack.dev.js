@@ -36,8 +36,8 @@ module.exports = {
       ],
    },
    output: {
-      filename: 'ux-key-lib.js',
-      library: 'UXKey',
+      filename: 'opentech-ux-lib.js',
+      library: 'OpentechUX',
       path: path.resolve(__dirname, 'dist-dev'),
       libraryTarget: 'umd',
    },
