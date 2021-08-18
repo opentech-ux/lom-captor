@@ -137,10 +137,6 @@ jobs:
          - name: Get changed files
            id: changed-files
            uses: tj-actions/changed-files@v1.0.0
-           with:
-              files: |
-                 dist
-                 dist-dev
 
          - name: Git commit
            if: steps.changed-files.outputs.any_changed == 'true'
