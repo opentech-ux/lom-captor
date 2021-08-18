@@ -111,11 +111,9 @@ jobs:
            uses: actions/download-artifact@v2
            with:
               name: dist
-         - name: Git commands
+         - name: Git commit
            run: |
-              git checkout -B $GITHUB_REF
               git add --all
-         - name: Git push
-           run: |
               git commit -m "Build complete [$(date '+%d/%m/%y %T')] [skip actions]"
-              git push
+         - name: Git push
+           run: git push
