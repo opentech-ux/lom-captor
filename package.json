@@ -4,7 +4,6 @@
       "url": "https://gitlab.com/ux-key/ux-key-script/issues"
    },
    "dependencies": {
-      "clean-webpack-plugin": "^3.0.0",
       "compression-webpack-plugin": "^8.0.1",
       "consola": "^2.15.3",
       "core-js": "^3.16.2",

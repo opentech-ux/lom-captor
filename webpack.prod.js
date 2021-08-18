@@ -1,6 +1,5 @@
 const path = require('path');
 const TerserPlugin = require('terser-webpack-plugin');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CompressionPlugin = require('compression-webpack-plugin');
 
 module.exports = {
@@ -21,31 +20,31 @@ module.exports = {
       minimize: true,
       minimizer: [
          new TerserPlugin({
+            extractComments: false,
             parallel: true,
             terserOptions: {
-               ecma: 2020,
-               ie8: true,
                compress: true,
-               safari10: true,
+               ecma: 2020,
                format: {
                   comments: false,
                },
+               ie8: true,
+               safari10: true,
             },
-            extractComments: false,
          }),
       ],
    },
    output: {
-      filename: 'opentech-ux-lib-prod.js',
+      clean: true,
+      filename: 'opentech-ux-lib.js',
       library: 'OpentechUX',
-      path: path.resolve(__dirname, 'dist'),
       libraryTarget: 'umd',
+      path: path.resolve(__dirname, 'dist'),
    },
    plugins: [
-      new CleanWebpackPlugin(),
       new CompressionPlugin({
-         test: /\.(js|jsx)$/,
          exclude: /[\\/]node_modules[\\/]/,
+         test: /\.(js|jsx)$/,
       }),
    ],
 };
