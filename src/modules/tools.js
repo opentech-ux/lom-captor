@@ -22,9 +22,12 @@ export const getPageName = () => {
    /**
     * @description URL's path.
     */
-   const pagePath = window.location.pathname.split('/').reverse()[0];
+   const pagePath = window.location.pathname.split('/').reverse()[0].split('.')[0];
 
-   if (pagePath === '/' && pageHash === '') return '';
+   const sessionData = JSON.parse(localStorage.getItem('sessionData'));
+   const lomsKeys = Object.keys(sessionData.loms);
+
+   if ((pagePath === '/' && pageHash === '') || lomsKeys.length === 0) return '';
 
    return `${pagePath}${pageHash}`;
 };
