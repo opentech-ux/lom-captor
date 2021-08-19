@@ -10,12 +10,23 @@ import { generateDomTree, getPageName } from './tools';
 const saveLastMouseDown = (event) =>
    localStorage.setItem('pageChangeElementID', event.target.dataset.uxId ?? null);
 
+/**
+ *
+ *
+ * @param {LOM} lomObject
+ * @param {string} linkPageName
+ * @param {string} pageChangeElementID
+ */
 const addLinkToElement = (lomObject, linkPageName, pageChangeElementID) => {
    const { uxId, children } = lomObject;
    const isElementFound = uxId && uxId === pageChangeElementID;
 
    if (isElementFound) {
       lomObject.link = linkPageName;
+      lomObject.style = {
+         background: '#5F9EA0',
+         border: '2px solid #00008B',
+      };
    } else if (children.length > 0) {
       children.forEach((lomChild) => addLinkToElement(lomChild, linkPageName, pageChangeElementID));
    }

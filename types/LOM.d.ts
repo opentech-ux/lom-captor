@@ -6,5 +6,9 @@ declare interface LOM {
       y: number;
    };
    children: LOM[];
+   style: {
+      background: string;
+      border: string;
+   };
    uxId: string | null;
 }
