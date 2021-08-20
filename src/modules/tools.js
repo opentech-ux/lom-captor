@@ -3,6 +3,7 @@ import { encode } from 'js-base64';
 
 /**
  * @description Function to verify if a given number is within the range of two other numbers.
+ *
  * @param {number} number Number to compare.
  * @param {number} limitA First limit.
  * @param {number} limitB Last limit.
@@ -10,9 +11,9 @@ import { encode } from 'js-base64';
 export const isBetween = (number, limitA, limitB) => (number - limitA) * (number - limitB) <= 0;
 
 /**
- * @description Function to get the page name for the json file
+ * @description Function to get the page name for the json file.
  *
- * @returns {string} Page name
+ * @returns {string} Page name,
  */
 export const getPageName = () => {
    /**
@@ -35,14 +36,14 @@ export const getPageName = () => {
 /**
  * @description Function to create an object of the elements in the DOM of the page.
  *
- * @param {(Element | HTMLElement)} element Element from which to create the object.
- * @returns {LOM}
+ * @param {(HTMLElement | Element)} element Element from which to create the object.
+ * @returns {import('../../types/LOM').LOM}
  */
 export const generateDomTree = (element) => {
    const elementRect = element.getBoundingClientRect();
    const nodeNameFilter = ['HEAD', 'SCRIPT', 'svg', 'symbol', 'defs', 'path'];
 
-   /** @type {LOM} */
+   /** @type {import('../../types/LOM').LOM} */
    const elementInfo = {
       bounds: {
          height: elementRect.height,
@@ -51,6 +52,7 @@ export const generateDomTree = (element) => {
          y: elementRect.y,
       },
       children: [],
+      // @ts-expect-error
       uxId: element.dataset.uxId || null,
    };
 
@@ -88,6 +90,7 @@ const getElementIdx = (elt) => {
  */
 const getElementXPath = (elt) => {
    let path = '';
+   // @ts-expect-error
    for (; elt && elt.nodeType === 1; elt = elt.parentNode) {
       const idx = getElementIdx(elt);
       let xname = elt.tagName;
@@ -113,6 +116,8 @@ export const identifyElements = (element) => {
    if (element.hasChildNodes()) {
       const children = Array.from(element.children);
       for (let i = 0; i < children.length; i += 1) {
+         /** @type {HTMLElement} */
+         // @ts-expect-error
          const child = children[i];
          if (filter.indexOf(child.nodeName) === -1) {
             identifyElements(child);

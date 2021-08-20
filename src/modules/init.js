@@ -7,7 +7,7 @@ import { identifyElements } from './tools';
 /**
  * @description Initialises the script to start the data obtention.
  *
- * @param {ScriptConfiguration} config Configuration for the script init.
+ * @param {import('../../types/ScriptConfiguration').ScriptConfiguration} scriptConfig Configuration for the script init.
  */
 export const initScript = (scriptConfig) => {
    if (scriptConfig.endpoint) {

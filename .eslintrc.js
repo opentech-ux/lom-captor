@@ -20,6 +20,6 @@ module.exports = {
    root: true,
    rules: {
       'prettier/prettier': 'error',
-      'no-underscore-dangle': 'off',
+      'import/prefer-default-export': 'off',
    },
 };

@@ -1,4 +1,4 @@
-declare interface LOM {
+export interface LOM {
    bounds: {
       height: number;
       width: number;
@@ -6,9 +6,10 @@ declare interface LOM {
       y: number;
    };
    children: LOM[];
-   style: {
+   style?: {
       background: string;
       border: string;
    };
    uxId: string | null;
+   [key: string]: unknown;
 }

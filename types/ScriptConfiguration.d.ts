@@ -1,4 +1,4 @@
-declare interface ScriptConfiguration {
+export interface ScriptConfiguration {
    customAttribute: string;
    endpoint: string;
 }

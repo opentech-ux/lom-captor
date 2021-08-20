@@ -3,19 +3,22 @@ import { sendData } from './http';
 import { generateDomTree, getPageName } from './tools';
 
 /**
+ * @description Gets and stores the last clicked element UX ID to set the "page change executer".
  *
- *
- * @param {MouseEvent} event
+ * @param {MouseEvent} event Click event information.
  */
-const saveLastMouseDown = (event) =>
+const saveLastMouseDown = (event) => {
+   // @ts-expect-error Target is already a HTMLElement, so it includes the dataset attribute
    localStorage.setItem('pageChangeElementID', event.target.dataset.uxId ?? null);
+};
 
 /**
+ * @description Checks the LOM information to identify the element that executes
+ * the change of page in the site.
  *
- *
- * @param {LOM} lomObject
- * @param {string} linkPageName
- * @param {string} pageChangeElementID
+ * @param {import('../../types/LOM').LOM} lomObject LOM information.
+ * @param {string} linkPageName Page name to where the element will go.
+ * @param {string} pageChangeElementID Element UX ID to search for.
  */
 const addLinkToElement = (lomObject, linkPageName, pageChangeElementID) => {
    const { uxId, children } = lomObject;
@@ -33,9 +36,10 @@ const addLinkToElement = (lomObject, linkPageName, pageChangeElementID) => {
 };
 
 /**
+ * Sets the LOM that will be added to the "loms" object at the sessions data, also the name of the
+ * page where the LOM belongs. Then it sends the new session Data to the user-defined endpoint.
  *
- *
- * @param {ScriptConfiguration} scriptConfig
+ * @param {import('../../types/ScriptConfiguration').ScriptConfiguration} scriptConfig
  */
 export const setLoms = (scriptConfig) => {
    const currentLom = generateDomTree(document.body);
@@ -57,7 +61,7 @@ export const setLoms = (scriptConfig) => {
 };
 
 /**
- * @description Management function for events to be monitored.
+ * @description Adds event handlers for the current page.
  */
 export const setEventHandlers = () => {
    document.body.addEventListener('mousedown', (event) => saveLastMouseDown(event), false);

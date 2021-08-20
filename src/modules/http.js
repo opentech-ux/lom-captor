@@ -1,4 +1,3 @@
-/* eslint-disable import/prefer-default-export */
 import consola from 'consola';
 import { isBetween } from './tools';
 
@@ -20,7 +19,7 @@ const commonConfig = {
 };
 
 /**
- * @description Function to perform an HTTP POST method and create a new record in the database.
+ * @description Performs an HTTP POST method and create a new record in the database.
  *
  * @param {string} endpoint API endpoint to perform the HTTP method.
  * @param {Record<string, unknown>} body Information related to the method to be performed.
@@ -45,7 +44,7 @@ const POST = (endpoint, body) =>
 /**
  * @description Sends the session data to the user-defined endpoint.
  *
- * @param {ScriptConfiguration} scriptConfig
+ * @param {import('../../types/ScriptConfiguration').ScriptConfiguration} scriptConfig
  */
 export const sendData = async (scriptConfig) => {
    const sessionData = JSON.parse(localStorage.getItem('sessionData'));
