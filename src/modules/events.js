@@ -64,5 +64,5 @@ export const setLoms = (scriptConfig) => {
  * @description Adds event handlers for the current page.
  */
 export const setEventHandlers = () => {
-   document.body.addEventListener('mousedown', (event) => saveLastMouseDown(event), false);
+   document.body.addEventListener('click', (event) => saveLastMouseDown(event), false);
 };

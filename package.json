@@ -8,8 +8,10 @@
       "consola": "^2.15.3",
       "core-js": "^3.18.0",
       "js-base64": "^3.7.1",
+      "luxon": "^2.0.2",
       "regenerator-runtime": "^0.13.9",
-      "terser-webpack-plugin": "^5.2.4"
+      "terser-webpack-plugin": "^5.2.4",
+      "uuid": "^8.3.2"
    },
    "description": "Script that allows to obtain information about the behavior of visitors in websites.",
    "devDependencies": {
