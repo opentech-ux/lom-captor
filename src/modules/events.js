@@ -13,8 +13,8 @@ const saveLastMouseDown = (event) => {
 };
 
 /**
- * @description Checks the LOM information to identify the element that executes
- * the change of page in the site.
+ * @description Checks the LOM information to identify the element that executes the change of page
+ * in the site.
  *
  * @param {import('../../types/LOM').LOM} lomObject LOM information.
  * @param {string} linkPageName Page name to where the element will go.
@@ -36,10 +36,11 @@ const addLinkToElement = (lomObject, linkPageName, pageChangeElementID) => {
 };
 
 /**
- * Sets the LOM that will be added to the "loms" object at the sessions data, also the name of the
- * page where the LOM belongs. Then it sends the new session Data to the user-defined endpoint.
+ * @description Sets the LOM that will be added to the "loms" object at the sessions data, also the
+ * name of the page where the LOM belongs. Then it sends the new session Data to the user-defined
+ * endpoint.
  *
- * @param {import('../../types/ScriptConfiguration').ScriptConfiguration} scriptConfig
+ * @param {import('../../types/ScriptConfiguration').ScriptConfiguration} scriptConfig Configuration for the script init.
  */
 export const setLoms = (scriptConfig) => {
    const currentLom = generateDomTree(document.body);

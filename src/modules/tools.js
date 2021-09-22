@@ -52,7 +52,7 @@ export const generateDomTree = (element) => {
          y: elementRect.y,
       },
       children: [],
-      // @ts-expect-error
+      // @ts-expect-error Element is already a HTMLElement, so it includes the dataset attribute
       uxId: element.dataset.uxId || null,
    };
 
@@ -90,7 +90,7 @@ const getElementIdx = (elt) => {
  */
 const getElementXPath = (elt) => {
    let path = '';
-   // @ts-expect-error
+   // @ts-expect-error elt (ParentNode) is already a HTMLElement, so it includes the dataset attribute
    for (; elt && elt.nodeType === 1; elt = elt.parentNode) {
       const idx = getElementIdx(elt);
       let xname = elt.tagName;
@@ -116,10 +116,9 @@ export const identifyElements = (element) => {
    if (element.hasChildNodes()) {
       const children = Array.from(element.children);
       for (let i = 0; i < children.length; i += 1) {
-         /** @type {HTMLElement} */
-         // @ts-expect-error
          const child = children[i];
          if (filter.indexOf(child.nodeName) === -1) {
+            // @ts-expect-error Child is already a HTMLElement
             identifyElements(child);
          }
       }

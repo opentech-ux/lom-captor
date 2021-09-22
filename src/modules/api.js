@@ -2,9 +2,9 @@ import { DateTime, Duration } from 'luxon';
 import { v4 as uuidv4 } from 'uuid';
 
 /**
- * @description Manages the session refresh and session id creation at the defined moment to make it
+ * @description Manages the session refresh and session id creation at the defined moment to make it.
  *
- * @returns {string}
+ * @returns {string} The session ID.
  */
 const setSessionId = () => {
    let sessionId = localStorage.getItem('sessionId');
@@ -30,6 +30,8 @@ const setSessionId = () => {
 
 /**
  * @description Creates the base information object for the session replay.
+ *
+ * @param {boolean} [isNewSession=false] Forces the creation of a new session.
  */
 export const setSession = (isNewSession = false) => {
    const sessionId = setSessionId();

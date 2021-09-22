@@ -1,4 +1,3 @@
-/* eslint-disable import/prefer-default-export */
 import consola from 'consola';
 import { setSession } from './api';
 import { setEventHandlers, setLoms } from './events';
@@ -15,6 +14,6 @@ export const initScript = (scriptConfig) => {
       setSession();
       setLoms(scriptConfig);
       setEventHandlers();
-      consola.ready('Ready');
+      consola.ready('Opentech UX is running');
    }
 };

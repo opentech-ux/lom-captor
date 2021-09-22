@@ -1,4 +1,3 @@
-/* eslint-disable prefer-destructuring */
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import { initScript } from './modules/init';
@@ -7,19 +6,19 @@ import { initScript } from './modules/init';
  * @description Script where this code is being executed.
  * @type {HTMLOrSVGScriptElement}
  */
-const currentScript = document.currentScript;
+const ongoingScript = document.currentScript;
 
 /**
  * @description Configuration for the script init.
  * @type {import('../types/ScriptConfiguration').ScriptConfiguration}
  */
 const urlConfig = {
-   customAttribute: currentScript.dataset.customAttribute,
-   endpoint: currentScript.dataset.endpoint,
+   customAttribute: ongoingScript.dataset.customAttribute,
+   endpoint: ongoingScript.dataset.endpoint,
 };
 
 /**
- * @description Function to manually start UX-Key script monitoring operation.
+ * @description Function to manually start the monitoring.
  *
  * @param {import('../types/ScriptConfiguration').ScriptConfiguration} config Configuration for the script init.
  */
