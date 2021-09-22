@@ -1,5 +1,5 @@
 import consola from 'consola';
-import { isBetween } from './tools';
+import { isBetween, secureLocalStorage } from './tools';
 
 /**
  * @description Common configuration of the fetch function.
@@ -47,7 +47,8 @@ const POST = (endpoint, body) =>
  * @param {import('../../types/ScriptConfiguration').ScriptConfiguration} scriptConfig
  */
 export const sendData = async (scriptConfig) => {
-   const sessionData = JSON.parse(localStorage.getItem('sessionData'));
+   // const sessionData = JSON.parse(localStorage.getItem('sessionData'));
+   const sessionData = secureLocalStorage.get('sessionData');
    let dataToSend = sessionData;
 
    if (scriptConfig.customAttribute) dataToSend = { [scriptConfig.customAttribute]: sessionData };

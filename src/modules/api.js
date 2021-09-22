@@ -1,5 +1,6 @@
 import { DateTime, Duration } from 'luxon';
 import { v4 as uuidv4 } from 'uuid';
+import { secureLocalStorage } from './tools';
 
 /**
  * @description Manages the session refresh and session id creation at the defined moment to make it.
@@ -7,21 +8,26 @@ import { v4 as uuidv4 } from 'uuid';
  * @returns {string} The session ID.
  */
 const setSessionId = () => {
-   let sessionId = localStorage.getItem('sessionId');
-   let sessionDate = Number(localStorage.getItem('sessionDate'));
+   // let sessionId = localStorage.getItem('sessionId');
+   let sessionId = secureLocalStorage.get('sessionId');
+   // let sessionDate = Number(localStorage.getItem('sessionDate'));
+   let sessionDate = Number(secureLocalStorage.get('sessionDate'));
    const currentDate = DateTime.now().toMillis();
    const datesDuration = Duration.fromMillis(currentDate - sessionDate ?? currentDate);
 
    if (!sessionId) {
       sessionId = uuidv4();
-      localStorage.setItem('sessionId', sessionId);
+      // localStorage.setItem('sessionId', sessionId);
+      secureLocalStorage.set('sessionId', sessionId);
    }
 
    if (!sessionDate) {
       sessionDate = currentDate;
-      localStorage.setItem('sessionDate', String(sessionDate));
+      // localStorage.setItem('sessionDate', String(sessionDate));
+      secureLocalStorage.set('sessionDate', sessionDate);
    } else if (datesDuration.as('hours') >= 3) {
-      localStorage.clear();
+      // localStorage.clear();
+      secureLocalStorage.removeAll();
       setSession(true);
    }
 
@@ -35,7 +41,8 @@ const setSessionId = () => {
  */
 export const setSession = (isNewSession = false) => {
    const sessionId = setSessionId();
-   const sessionData = JSON.parse(localStorage.getItem('sessionData'));
+   // const sessionData = JSON.parse(localStorage.getItem('sessionData'));
+   const sessionData = secureLocalStorage.get('sessionData');
 
    /**
     * @description Base session information.
@@ -49,6 +56,8 @@ export const setSession = (isNewSession = false) => {
       sessionId,
    };
 
-   if (!sessionData || isNewSession)
-      localStorage.setItem('sessionData', JSON.stringify(sessionObject));
+   if (!sessionData || isNewSession) {
+      // localStorage.setItem('sessionData', JSON.stringify(sessionObject));
+      secureLocalStorage.set('sessionData', sessionObject);
+   }
 };

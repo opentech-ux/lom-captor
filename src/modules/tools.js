@@ -1,5 +1,8 @@
 /* eslint-disable no-param-reassign */
 import { encode } from 'js-base64';
+import SecureLS from 'secure-ls';
+
+export const secureLocalStorage = new SecureLS();
 
 /**
  * @description Function to verify if a given number is within the range of two other numbers.
@@ -25,7 +28,8 @@ export const getPageName = () => {
     */
    const pagePath = window.location.pathname.split('/').reverse()[0].split('.')[0];
 
-   const sessionData = JSON.parse(localStorage.getItem('sessionData'));
+   // const sessionData = JSON.parse(localStorage.getItem('sessionData'));
+   const sessionData = secureLocalStorage.get('sessionData');
    const lomsKeys = Object.keys(sessionData.loms);
 
    if ((pagePath === '/' && pageHash === '') || lomsKeys.length === 0) return '';
