@@ -4,17 +4,16 @@
       "url": "https://github.com/opentech-ux/lom-captor/issues"
    },
    "dependencies": {
-      "compression-webpack-plugin": "^9.0.0",
       "consola": "^2.15.3",
-      "core-js": "^3.18.0",
-      "js-base64": "^3.7.1",
+      "js-base64": "^3.7.2",
       "luxon": "^2.0.2",
       "regenerator-runtime": "^0.13.9",
-      "terser-webpack-plugin": "^5.2.4",
       "uuid": "^8.3.2"
    },
    "description": "Script that allows to obtain information about the behavior of visitors in websites.",
    "devDependencies": {
+      "compression-webpack-plugin": "^9.0.0",
+      "terser-webpack-plugin": "^5.2.4",
       "@babel/core": "^7.15.5",
       "@babel/eslint-parser": "^7.15.7",
       "@babel/plugin-transform-modules-commonjs": "^7.15.4",

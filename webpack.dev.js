@@ -3,6 +3,7 @@ const TerserPlugin = require('terser-webpack-plugin');
 const CompressionPlugin = require('compression-webpack-plugin');
 
 module.exports = {
+   devtool: 'source-map',
    entry: path.resolve(__dirname, '/src/app.js'),
    mode: 'development',
    module: {
@@ -36,7 +37,7 @@ module.exports = {
    },
    output: {
       clean: true,
-      filename: 'opentech-ux-lib.js',
+      filename: `opentech-ux-${process.env.npm_package_version}-dev.js`,
       library: 'OpentechUX',
       libraryTarget: 'umd',
       path: path.resolve(__dirname, 'dist-dev'),

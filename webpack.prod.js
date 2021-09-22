@@ -36,7 +36,7 @@ module.exports = {
    },
    output: {
       clean: true,
-      filename: 'opentech-ux-lib.js',
+      filename: `opentech-ux-${process.env.npm_package_version}.js`,
       library: 'OpentechUX',
       libraryTarget: 'umd',
       path: path.resolve(__dirname, 'dist'),
