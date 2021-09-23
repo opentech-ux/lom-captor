@@ -5,6 +5,7 @@ on:
       branches: [develop]
    pull_request:
       branches: [master]
+      types: [closed]
 
 jobs:
    dependencies:
@@ -102,6 +103,7 @@ jobs:
               path: dist/
 
    deploy:
+      if: github.event.pull_request.merged == true
       needs: [dependencies, test, build]
       runs-on: ubuntu-latest
       strategy:
