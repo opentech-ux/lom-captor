@@ -65,7 +65,7 @@ jobs:
 
    build:
       if: github.event.pull_request.merged == true
-      needs: [dependencies, test]
+      needs: [dependencies, tests]
       runs-on: ubuntu-latest
       strategy:
          matrix:
@@ -105,7 +105,7 @@ jobs:
 
    deploy:
       if: github.event.pull_request.merged == true
-      needs: [dependencies, test, build]
+      needs: [dependencies, tests, build]
       runs-on: ubuntu-latest
       strategy:
          matrix:
