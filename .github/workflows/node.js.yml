@@ -33,7 +33,7 @@ jobs:
            if: steps.node-cache.outputs.cache-hit != 'true'
            run: npm install
 
-   test:
+   tests:
       needs: dependencies
       runs-on: ubuntu-latest
       strategy:
@@ -64,6 +64,7 @@ jobs:
            run: npm run test:unit
 
    build:
+      if: github.event.pull_request.merged == true
       needs: [dependencies, test]
       runs-on: ubuntu-latest
       strategy:
