@@ -4,7 +4,7 @@ on:
    push:
       branches: [develop]
    pull_request:
-      branches: [develop]
+      branches: [master]
 
 jobs:
    dependencies:
@@ -132,7 +132,7 @@ jobs:
          - name: Git commit
            run: |
               git add --all
-              git diff-index --quiet HEAD || git commit -m "Build complete [$(date '+%d/%m/%y %T')] [skip actions]"
+              git diff-index --quiet HEAD || git commit -m "Build complete [$(date '+%d/%m/%y %T UTC' -u)] [skip actions]"
 
          - name: Git push
            run: git push
