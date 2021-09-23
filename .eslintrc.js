@@ -12,14 +12,16 @@ module.exports = {
       Atomics: 'readonly',
       SharedArrayBuffer: 'readonly',
    },
-   parser: 'babel-eslint',
+   parser: '@babel/eslint-parser',
    parserOptions: {
       ecmaVersion: 2020,
    },
    plugins: ['react', 'prettier'],
    root: true,
    rules: {
+      'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
+      'import/prefer-default-export': 'off',
+      'no-use-before-define': 'off',
       'prettier/prettier': 'error',
-      'no-underscore-dangle': 'off',
    },
 };

@@ -1,0 +1,141 @@
+name: Node.js CI
+
+on:
+   push:
+      branches: [develop]
+   pull_request:
+      branches: [master]
+      types: [closed]
+
+jobs:
+   dependencies:
+      runs-on: ubuntu-latest
+      strategy:
+         matrix:
+            node-version: [14]
+      steps:
+         - uses: actions/checkout@v2
+
+         - name: Use Node.js ${{ matrix.node-version }}
+           uses: actions/setup-node@v2
+           with:
+              node-version: ${{ matrix.node-version }}
+              cache: 'npm'
+
+         - name: Cache node_modules
+           id: node-cache
+           uses: actions/cache@v2
+           with:
+              path: node_modules
+              key: ${{ runner.os }}-npm-deps-${{ hashFiles('**/package-lock.json') }}
+
+         - name: Install
+           if: steps.node-cache.outputs.cache-hit != 'true'
+           run: npm install
+
+   tests:
+      needs: dependencies
+      runs-on: ubuntu-latest
+      strategy:
+         matrix:
+            node-version: [14]
+      steps:
+         - uses: actions/checkout@v2
+
+         - name: Use Node.js ${{ matrix.node-version }}
+           uses: actions/setup-node@v2
+           with:
+              node-version: ${{ matrix.node-version }}
+              cache: 'npm'
+
+         - name: Cache node_modules
+           uses: actions/cache@v2
+           with:
+              path: node_modules
+              key: ${{ runner.os }}-npm-deps-${{ hashFiles('**/package-lock.json') }}
+
+         - name: ESLint
+           run: npm run eslint:check
+
+         - name: Prettier
+           run: npm run prettier:check
+
+         - name: Unit test
+           run: npm run test:unit
+
+   build:
+      if: github.event.pull_request.merged == true
+      needs: [dependencies, tests]
+      runs-on: ubuntu-latest
+      strategy:
+         matrix:
+            node-version: [14]
+      steps:
+         - uses: actions/checkout@v2
+
+         - name: Use Node.js ${{ matrix.node-version }}
+           uses: actions/setup-node@v2
+           with:
+              node-version: ${{ matrix.node-version }}
+              cache: 'npm'
+
+         - name: Cache node_modules
+           uses: actions/cache@v2
+           with:
+              path: node_modules
+              key: ${{ runner.os }}-npm-deps-${{ hashFiles('**/package-lock.json') }}
+
+         - name: Development build
+           run: npm run build:dev
+
+         - name: Development upload
+           uses: actions/upload-artifact@v2
+           with:
+              name: dist-dev
+              path: dist-dev/
+
+         - name: Production build
+           run: npm run build:prod
+
+         - name: Production upload
+           uses: actions/upload-artifact@v2
+           with:
+              name: dist
+              path: dist/
+
+   deploy:
+      if: github.event.pull_request.merged == true
+      needs: [dependencies, tests, build]
+      runs-on: ubuntu-latest
+      strategy:
+         matrix:
+            node-version: [14]
+      env:
+         CI_PUSH_EMAIL: ${{secrets.CI_PUSH_EMAIL}}
+      steps:
+         - uses: actions/checkout@v2
+
+         - name: Git configuration
+           run: |
+              git config --global user.email $CI_PUSH_EMAIL
+              git config --global user.name "Opentech UX Github Actions"
+
+         - name: Development download
+           uses: actions/download-artifact@v2
+           with:
+              name: dist-dev
+              path: dist-dev
+
+         - name: Production download
+           uses: actions/download-artifact@v2
+           with:
+              name: dist
+              path: dist
+
+         - name: Git commit
+           run: |
+              git add --all
+              git diff-index --quiet HEAD || git commit -m "Build complete [$(date '+%d/%m/%y %T UTC' -u)] [skip actions]"
+
+         - name: Git push
+           run: git push

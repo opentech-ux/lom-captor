@@ -1,22 +1,19 @@
-import { getUser, setPage, setSession, setSite, setVisitor, updatePreviousSession } from './api';
-import setEventHandlers from './events';
-import { identifyElements, updatePreviousPage, uxkeyConsole } from './tools';
-/**
- * @description Function that initiates the operation of the script by setting the information obtained.
- * @param {string} apiKey UX-Key User API Key.
- * @param {Record<string, number>} loadingTimeObject UX-Key User API Key.
- */
-const initScript = async (apiKey, loadingTimeObject) => {
-   identifyElements(document.body);
-   const userInfo = await getUser(apiKey);
-   const siteInfo = await setSite(userInfo);
-   const pageInfo = await setPage(siteInfo);
-   const visitorId = await setVisitor(pageInfo._id, siteInfo._id);
-   const sessionInfo = await setSession(pageInfo, visitorId, loadingTimeObject);
-   updatePreviousSession();
-   updatePreviousPage(pageInfo, sessionInfo);
-   setEventHandlers(sessionInfo, visitorId, pageInfo);
-   uxkeyConsole.ready('UX-Key is ready');
-};
+import consola from 'consola';
+import { setSession } from './api';
+import { setEventHandlers, setLoms } from './events';
+import { identifyElements } from './tools';
 
-export default initScript;
+/**
+ * @description Initialises the script to start the data obtention.
+ *
+ * @param {import('../../types/ScriptConfiguration').ScriptConfiguration} scriptConfig Configuration for the script init.
+ */
+export const initScript = (scriptConfig) => {
+   if (scriptConfig.endpoint) {
+      identifyElements(document.body);
+      setSession();
+      setLoms(scriptConfig);
+      setEventHandlers();
+      consola.ready('Opentech UX is running');
+   }
+};
