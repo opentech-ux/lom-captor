@@ -64,7 +64,7 @@ jobs:
            run: npm run test:unit
 
    build:
-      if: github.event.pull_request.merged == true
+      if: github.event.pull_request.merged == true || github.event_name == 'push'
       needs: [dependencies, tests]
       runs-on: ubuntu-latest
       strategy:
@@ -104,7 +104,7 @@ jobs:
               path: dist/
 
    deploy:
-      if: github.event.pull_request.merged == true
+      if: github.event.pull_request.merged == true || github.event_name == 'push'
       needs: [dependencies, tests, build]
       runs-on: ubuntu-latest
       strategy:
@@ -119,6 +119,11 @@ jobs:
            run: |
               git config --global user.email $CI_PUSH_EMAIL
               git config --global user.name "Opentech UX Github Actions"
+
+         - name: Build clean
+           run: |
+              sudo rm -R dist
+              sudo rm -R dist-dev
 
          - name: Development download
            uses: actions/download-artifact@v2
