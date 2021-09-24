@@ -120,6 +120,11 @@ jobs:
               git config --global user.email $CI_PUSH_EMAIL
               git config --global user.name "Opentech UX Github Actions"
 
+         - name: Build clean
+           run: |
+              sudo rm -R dist
+              sudo rm -R dist-dev
+
          - name: Development download
            uses: actions/download-artifact@v2
            with:
