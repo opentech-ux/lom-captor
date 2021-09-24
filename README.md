@@ -19,7 +19,7 @@ To start with this section, you will need to have access to the JavaScript file 
 recommend downloading the latest version from the releases section. However, you could reference
 this file via the following link :
 
-`https://cdn.statically.io/gh/opentech-ux/lom-captor/develop/dist/opentech-ux-lib.js`
+`https://opentech-ux.github.io/lom-captor/dist/opentech-ux-1.0.0.js`
 
 We try to keep the script installation as simple as possible. Mainly you will need to add a script
 tag that references the script's JavaScript file in the head of the HTML file. Like this:
