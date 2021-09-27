@@ -1,9 +1,20 @@
 # OpenTech UX LOM Captor
 
-Script that allows to obtain information about the visited sites to recreate a session behavior with
-the compiler.
+[![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fopentech-ux%2Flom-captor%2Fbadge%3Fref%3Dmaster&style=flat)](https://actions-badge.atrox.dev/opentech-ux/lom-captor/goto?ref=master)
+
+- [OpenTech UX LOM Captor](#opentech-ux-lom-captor)
+  * [Description](#description)
+  * [Installation](#installation)
+  * [Configuration](#configuration)
+      - [Endpoint](#endpoint)
+      - [Custom attribute](#custom-attribute)
+  * [Launching](#launching)
+  * [License](#license)
 
 ## Description
+
+Script that allows to obtain information about the visited sites to recreate a session behavior with
+the compiler.
 
 This script is made to obtain the browsing information of a user within a web site. By storing
 information in the browser's local storage it is possible to keep track of a person's movement on a
