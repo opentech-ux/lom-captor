@@ -2,14 +2,14 @@
 
 [![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fopentech-ux%2Flom-captor%2Fbadge%3Fref%3Dmaster&style=flat)](https://actions-badge.atrox.dev/opentech-ux/lom-captor/goto?ref=master)
 
-- [OpenTech UX LOM Captor](#opentech-ux-lom-captor)
-  * [Description](#description)
-  * [Installation](#installation)
-  * [Configuration](#configuration)
-      - [Endpoint](#endpoint)
-      - [Custom attribute](#custom-attribute)
-  * [Launching](#launching)
-  * [License](#license)
+-  [OpenTech UX LOM Captor](#opentech-ux-lom-captor)
+   -  [Description](#description)
+   -  [Installation](#installation)
+   -  [Configuration](#configuration)
+      -  [Endpoint](#endpoint)
+      -  [Custom attribute](#custom-attribute)
+   -  [Launching](#launching)
+   -  [License](#license)
 
 ## Description
 
@@ -30,7 +30,7 @@ To start with this section, you will need to have access to the JavaScript file 
 recommend downloading the latest version from the releases section. However, you could reference
 this file via the following link :
 
-`https://opentech-ux.github.io/lom-captor/dist/opentech-ux-1.0.0.js`
+`https://opentech-ux.github.io/lom-captor/dist/opentech-ux-lib.js`
 
 We try to keep the script installation as simple as possible. Mainly you will need to add a script
 tag that references the script's JavaScript file in the head of the HTML file. Like this:
