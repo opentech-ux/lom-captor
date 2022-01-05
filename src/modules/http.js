@@ -47,7 +47,7 @@ const POST = (endpoint, body) =>
  * @param {import('../../types/ScriptConfiguration').ScriptConfiguration} scriptConfig
  */
 export const sendData = async (scriptConfig) => {
-   const sessionData = JSON.parse(localStorage.getItem('sessionData'));
+   const sessionData = JSON.parse(localStorage.getItem('lom-sessionData'));
    let dataToSend = sessionData;
 
    if (scriptConfig.customAttribute) dataToSend = { [scriptConfig.customAttribute]: sessionData };

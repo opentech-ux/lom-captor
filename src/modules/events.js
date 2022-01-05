@@ -9,7 +9,7 @@ import { generateDomTree, getPageName } from './tools';
  */
 const saveLastMouseDown = (event) => {
    // @ts-expect-error Target is already a HTMLElement, so it includes the dataset attribute
-   localStorage.setItem('pageChangeElementID', event.target.dataset.uxId ?? null);
+   localStorage.setItem('lom-pageChangeElementID', event.target.dataset.uxId ?? null);
 };
 
 /**
@@ -44,21 +44,21 @@ const addLinkToElement = (lomObject, linkPageName, pageChangeElementID) => {
  */
 export const setLoms = (scriptConfig) => {
    const currentLom = generateDomTree(document.body);
-   const previousLom = JSON.parse(localStorage.getItem('previousLom'));
-   const sessionData = JSON.parse(localStorage.getItem('sessionData'));
+   const previousLom = JSON.parse(localStorage.getItem('lom-previousLom'));
+   const sessionData = JSON.parse(localStorage.getItem('lom-sessionData'));
    const pageName = getPageName();
 
    if (previousLom) {
-      const previousPageName = localStorage.getItem('previousPageName');
-      const pageChangeElementID = localStorage.getItem('pageChangeElementID');
+      const previousPageName = localStorage.getItem('lom-previousPageName');
+      const pageChangeElementID = localStorage.getItem('lom-pageChangeElementID');
       addLinkToElement(previousLom, pageName, pageChangeElementID);
       sessionData.loms[previousPageName] = previousLom;
-      localStorage.setItem('sessionData', JSON.stringify(sessionData));
+      localStorage.setItem('lom-sessionData', JSON.stringify(sessionData));
       sendData(scriptConfig);
    }
 
-   localStorage.setItem('previousPageName', pageName);
-   localStorage.setItem('previousLom', JSON.stringify(currentLom));
+   localStorage.setItem('lom-previousPageName', pageName);
+   localStorage.setItem('lom-previousLom', JSON.stringify(currentLom));
 };
 
 /**

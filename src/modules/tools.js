@@ -25,7 +25,7 @@ export const getPageName = () => {
     */
    const pagePath = window.location.pathname.split('/').reverse()[0].split('.')[0];
 
-   const sessionData = JSON.parse(localStorage.getItem('sessionData'));
+   const sessionData = JSON.parse(localStorage.getItem('lom-sessionData'));
    const lomsKeys = Object.keys(sessionData.loms);
 
    if ((pagePath === '/' && pageHash === '') || lomsKeys.length === 0) return '';

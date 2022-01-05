@@ -7,21 +7,28 @@ import { v4 as uuidv4 } from 'uuid';
  * @returns {string} The session ID.
  */
 const setSessionId = () => {
-   let sessionId = localStorage.getItem('sessionId');
-   let sessionDate = Number(localStorage.getItem('sessionDate'));
+   let sessionId = localStorage.getItem('lom-sessionId');
+   let sessionDate = Number(localStorage.getItem('lom-sessionDate'));
    const currentDate = DateTime.now().toMillis();
    const datesDuration = Duration.fromMillis(currentDate - sessionDate ?? currentDate);
 
    if (!sessionId) {
       sessionId = uuidv4();
-      localStorage.setItem('sessionId', sessionId);
+      localStorage.setItem('lom-sessionId', sessionId);
    }
 
    if (!sessionDate) {
       sessionDate = currentDate;
-      localStorage.setItem('sessionDate', String(sessionDate));
+      localStorage.setItem('lom-sessionDate', String(sessionDate));
    } else if (datesDuration.as('hours') >= 3) {
-      localStorage.clear();
+      localStorage.removeItem('lom-sessionId');
+      localStorage.removeItem('lom-sessionDate');
+      localStorage.removeItem('lom-sessionData');
+
+      localStorage.removeItem('lom-pageChangeElementID');
+      localStorage.removeItem('lom-previousLom');
+      localStorage.removeItem('lom-previousPageName');
+
       setSession(true);
    }
 
@@ -35,7 +42,7 @@ const setSessionId = () => {
  */
 export const setSession = (isNewSession = false) => {
    const sessionId = setSessionId();
-   const sessionData = JSON.parse(localStorage.getItem('sessionData'));
+   const sessionData = JSON.parse(localStorage.getItem('lom-sessionData'));
 
    /**
     * @description Base session information.
@@ -50,5 +57,5 @@ export const setSession = (isNewSession = false) => {
    };
 
    if (!sessionData || isNewSession)
-      localStorage.setItem('sessionData', JSON.stringify(sessionObject));
+      localStorage.setItem('lom-sessionData', JSON.stringify(sessionObject));
 };
