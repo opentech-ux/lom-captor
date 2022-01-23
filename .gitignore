@@ -1,2 +1,16 @@
+# Ignore hidden files
+.*
+
+# Ignore NPM downloaded modules
 node_modules/
-.vscode/
+
+# Ignore IntelliJ IDEA files
+.idea
+*.iws
+*.iml
+*.ipr
+
+!.gitignore
+!.gitattributes
+!.gitkeep
+!.github
