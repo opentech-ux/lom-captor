@@ -16,7 +16,6 @@
     "@babel/eslint-parser": "^7.15.7",
     "@babel/plugin-transform-modules-commonjs": "^7.15.4",
     "@babel/preset-env": "^7.15.6",
-    "@types/compression-webpack-plugin": "^9.0.0",
     "@types/jest": "^27.0.2",
     "@types/js-cookie": "^3.0.0",
     "babel-loader": "^8.2.2",
