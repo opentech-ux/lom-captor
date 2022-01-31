@@ -3,7 +3,7 @@ const TerserPlugin = require('terser-webpack-plugin');
 const CompressionPlugin = require('compression-webpack-plugin');
 
 module.exports = {
-   entry: path.resolve(__dirname, '/src/app.js'),
+   entry: path.resolve(__dirname, 'src/app.js'),
    mode: 'production',
    module: {
       rules: [
