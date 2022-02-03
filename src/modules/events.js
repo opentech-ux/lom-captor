@@ -116,12 +116,20 @@ const filterKeyboard = (event) => {
    }
 };
 
+let hasFirstMouseMoveSaved = false;
+
 /**
  * @description Function to manage mouse movements.
  */
 const saveMouseMove = () => {
    // * If there is a new movement and it is different from the previous one.
-   if (newMousePosition !== undefined && newMousePosition !== oldMousePosition) {
+   if (
+      newMousePosition !== undefined &&
+      newMousePosition !== oldMousePosition &&
+      !hasFirstMouseMoveSaved
+   ) {
+      hasFirstMouseMoveSaved = true;
+
       // The "mousemove" event is created.
       setEvent(newMousePosition, true);
 
@@ -146,7 +154,7 @@ const saveMouseMove = () => {
  */
 export const setEventHandlers = () => {
    document.body.addEventListener('click', (event) => saveLastMouseDown(event), false);
-   document.body.addEventListener('wheel', (event) => setEvent(event), false);
+   //document.body.addEventListener('wheel', (event) => setEvent(event), false);
    document.body.addEventListener('mousedown', (event) => setEvent(event), false);
    document.body.addEventListener('dragstart', (event) => setEvent(event), false);
    document.body.addEventListener('drop', (event) => setEvent(event), false);
