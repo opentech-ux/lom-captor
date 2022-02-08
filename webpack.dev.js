@@ -4,7 +4,7 @@ const TerserPlugin = require('terser-webpack-plugin');
 const CompressionPlugin = require('compression-webpack-plugin');
 
 module.exports = {
-    devtool: 'inline-source-map',
+    devtool: 'eval-source-map',
     entry: path.resolve(__dirname, 'src/index.ts'),
     mode: 'development',
     module: {

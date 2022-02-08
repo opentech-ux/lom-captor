@@ -36,6 +36,7 @@
     "terser-webpack-plugin": "^5.2.4",
     "ts-loader": "^9.2.6",
     "typescript": "^4.5.5",
+    "json-schema-to-typescript": "^10.1.5",
     "webpack": "^5.56.1",
     "webpack-cli": "^4.8.0"
   },
@@ -60,9 +61,11 @@
     "url": "git+https://github.com/opentech-ux/lom-captor.git"
   },
   "scripts": {
-    "build:dev": "webpack --config webpack.dev.js",
-    "build:prod": "webpack --config webpack.prod.js",
+    "build:clean": "rimraf ./build",
+    "build:dev": "npm run model:generate && webpack --config webpack.dev.js",
+    "build:prod": "npm run model:generate && webpack --config webpack.prod.js",
     "deps:refresh": "rimraf ./node_modules ./package-lock.json && npm install",
+    "model:generate": "json2ts -i ./schemas/ -o ./build/json-schema/",
     "eslint:format": "eslint --ext .js,.jsx --ignore-path .prettierignore . --fix",
     "prettier:format": "prettier \"./**/*.{js,jsx}\" --ignore-path .prettierignore -l --write",
     "test:eslint": "eslint --ext .js,.jsx --ignore-path .prettierignore . --color",
