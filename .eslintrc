@@ -1,43 +1,64 @@
 {
-    "env": {
-        "amd": true,
-        "browser": true,
-        "commonjs": true,
-        "es2020": true,
-        "jest": true,
-        "node": true
-    },
-    "extends": [
-        "airbnb",
-        "prettier"
+  "root": true,
+  "env": {
+    "amd": true,
+    "browser": true,
+    "commonjs": true,
+    "es2020": true,
+    "jest": true,
+    "node": true
+  },
+  "globals": {
+    "Atomics": "readonly",
+    "SharedArrayBuffer": "readonly"
+  },
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint",
+    "react",
+    "prettier"
+  ],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "airbnb",
+    "prettier"
+  ],
+  "rules": {
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        "devDependencies": true
+      }
     ],
-    "globals": {
-        "Atomics": "readonly",
-        "SharedArrayBuffer": "readonly"
+    "import/prefer-default-export": "off",
+    "no-use-before-define": "off",
+    "prettier/prettier": "warn",
+    "import/extensions": [
+      "warn",
+      "ignorePackages",
+      {
+        "js": "never",
+        "jsx": "never",
+        "ts": "never",
+        "tsx": "never"
+      }
+    ]
+  },
+  "settings": {
+    "react": {
+      "version": "999.999.999"
     },
-    "parser": "@babel/eslint-parser",
-    "parserOptions": {
-        "ecmaVersion": 2020
-    },
-    "plugins": [
-        "react",
-        "prettier"
-    ],
-    "root": true,
-    "rules": {
-        "import/no-extraneous-dependencies": [
-            "error",
-            {
-                "devDependencies": true
-            }
-        ],
-        "import/prefer-default-export": "off",
-        "no-use-before-define": "off",
-        "prettier/prettier": "error"
-    },
-    "settings": {
-        "react": {
-            "version": "999.999.999"
-        }
+    "import/resolver": {
+      "node": {
+        "extensions": [
+          ".js",
+          ".jsx",
+          ".ts",
+          ".tsx"
+        ]
+      }
     }
+  }
 }
