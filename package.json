@@ -6,6 +6,7 @@
   "dependencies": {
     "consola": "^2.15.3",
     "js-base64": "^3.7.2",
+    "just-detect-adblock": "^1.1.0",
     "luxon": "^2.0.2",
     "regenerator-runtime": "^0.13.9",
     "uuid": "^8.3.2"
@@ -19,6 +20,7 @@
     "@babel/preset-typescript": "^7.16.7",
     "@types/jest": "^27.4.0",
     "@types/js-cookie": "^3.0.0",
+    "@types/uuid": "^8.3.4",
     "@typescript-eslint/eslint-plugin": "^5.11.0",
     "@typescript-eslint/parser": "^5.11.0",
     "babel-loader": "^8.2.2",

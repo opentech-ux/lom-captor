@@ -39,9 +39,9 @@ export class SessionChunk implements TimeStamped<SessionChunk>, Serializable<Ses
     /** Return a copy of this SessionChunk with the timestamp relativized to specified time origin. */
     public relativizeTime(t0: number): SessionChunk {
         const result = new SessionChunk(this.sessionId, this.userId, this.timeStamp - t0);
-        result.loms.push(...this.loms);
-        result.explorationEvents.push(...this.explorationEvents);
-        result.actionEvents.push(...this.actionEvents);
+        result.loms.push(...this.loms.map((lom) => lom.relativizeTime(t0)));
+        result.explorationEvents.push(...this.explorationEvents.map((e) => e.relativizeTime(t0)));
+        result.actionEvents.push(...this.actionEvents.map((e) => e.relativizeTime(t0)));
         return result;
     }
 
