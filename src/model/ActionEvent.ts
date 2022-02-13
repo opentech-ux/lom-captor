@@ -6,7 +6,7 @@ export class ActionEvent extends AbstractEvent<ActionEvent> {
     /** ID of the LOM zone at which the event occurred. */
     public readonly zoneId: string;
 
-    /** mask containing modifiers 1:shift, 2 ctrl, 3 meta & co */
+    /** mask containing modifiers 1:shift, 2 ctrl, 4 alt, 8 meta & co */
     public readonly modifiers: number;
 
     constructor(timeStamp: number, type: string, zoneId: string, modifiers: number) {
