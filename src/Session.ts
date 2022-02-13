@@ -135,11 +135,35 @@ export class Session {
         const actionEvent = new ActionEvent(
             event.timeStamp,
             'C',
-            getZoneId(event.target as HTMLElement)
+            getZoneId(event.target as HTMLElement),
+            this.getEventModifiers(event.target)
         );
 
         this.currentChunk.actionEvents.push(actionEvent);
         if (this.settings.devMode) consola.debug(JSON.stringify(actionEvent));
+    }
+
+    /** Build a mask containing keyboard modifiers */
+    public getEventModifiers(event){
+        let result = 0;
+
+        if(event.getModifierState("Shift")){
+            result+= 1;
+        }
+
+        if(event.getModifierState("Control")){
+            result+= 2;
+        }
+
+        if (event.getModifierState("Fn") ||
+            event.getModifierState("Hyper") ||
+            event.getModifierState("OS") ||
+            event.getModifierState("Super") ||
+            event.getModifierState("Win") /* hack for IE */) {
+                result+= 4; 
+        }
+
+        return result;
     }
 
     /** Capture mouse moves and register it in session if mouse position differs significantly from last capture. */

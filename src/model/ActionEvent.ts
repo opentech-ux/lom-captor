@@ -6,13 +6,17 @@ export class ActionEvent extends AbstractEvent<ActionEvent> {
     /** ID of the LOM zone at which the event occurred. */
     public readonly zoneId: string;
 
-    constructor(timeStamp: number, type: string, zoneId: string) {
+    /** mask containing modifiers 1:shift, 2 ctrl, 3 meta & co */
+    public readonly modifiers: number;
+
+    constructor(timeStamp: number, type: string, zoneId: string, modifiers: number) {
         super(timeStamp, type);
         this.zoneId = zoneId;
+        this.modifiers = modifiers;
     }
 
     public relativizeTime(t0: number): ActionEvent {
-        return new ActionEvent(this.timeStamp - t0, this.type, this.zoneId);
+        return new ActionEvent(this.timeStamp - t0, this.type, this.zoneId, this.modifiers);
     }
 
     public toJSON(): ActionEventJson {
