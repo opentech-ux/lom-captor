@@ -6,6 +6,7 @@ import { ResolvedSettings, Settings, withDefaults } from './Settings';
 import { LOM } from './model/LOM';
 import { Point } from './model/Point';
 import { ExplorationEvent } from './model/ExplorationEvent';
+import { ActionEvent } from './model/ActionEvent';
 
 function getOrCreateSessionId(): string {
     let sessionId = sessionStorage.getItem('opentech-ux-sessionId');
@@ -127,6 +128,20 @@ export class Session {
         this.trackDomChanges = true;
     }
 
+    /** Capture a mouse click event */
+    public saveClickEvent(event){
+        const mousePosition = { x: event.pageX, y: event.pageY };
+    
+        const actionEvent = new ActionEvent(
+            event.timeStamp,
+            'C',
+            getZoneId(event.target as HTMLElement)
+        );
+
+        this.currentChunk.actionEvents.push(actionEvent);
+        if (this.settings.devMode) consola.debug(JSON.stringify(actionEvent));
+    }
+
     /** Capture mouse moves and register it in session if mouse position differs significantly from last capture. */
     public saveMouseMoveEvent() {
         if (!this.currentMouseEvent) return;
@@ -190,7 +205,7 @@ export class Session {
     }
 
     private setupActionEventListeners() {
-        // document.body.addEventListener('click', (event) => saveLastMouseDown(event), false);
+        document.body.addEventListener('click', (event) => this.saveClickEvent(event), false);
         // document.body.addEventListener('mousedown', (event) => setEvent(event), false);
         // document.body.addEventListener('dragstart', (event) => setEvent(event), false);
         // document.body.addEventListener('drop', (event) => setEvent(event), false);
