@@ -71,7 +71,7 @@ export class Zone implements Serializable<ZoneJson> {
         return currentZone;
     }
 
-    /** Check if this LOM is similar in shape with other LOM, with a specified tolerance. */
+    /** Check if this zone is similar in shape with other zone, with a specified tolerance. */
     public isSimilar(other: Zone, tolerance = 0): boolean {
         return (
             this.bounds.isCoincident(other.bounds, tolerance) &&

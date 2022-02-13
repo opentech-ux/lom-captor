@@ -1,167 +1,197 @@
 {
-    "$schema": "https://json-schema.org/draft/2019-09/schema",
-    "$id": "https://opentech-ux.github.io/sessionCapture-format",
-    "type": "object",
-    "title": "Session Capture",
-    "description": "A collection of LOMs and events captured during a certain time frame",
-    "additionalProperties": true,
-    "properties": {
-        "ts": {
-            "$ref": "#/$defs/TimeStamp",
-            "description": "Start time of this session chunk"
-        },
-        "sid": {
-            "type": "string",
-            "description": "Unique id identifying the current session"
-        },
-        "uid": {
-            "type": "string",
-            "description": "Unique id identifying anonymously the current user"
-        },
-        "loms": {
-            "type": "array",
-            "description": "List of LOMs captured in this session chunk",
-            "items": {
-                "$ref": "#/$defs/LOM"
-            }
-        },
-        "ee": {
-            "type": "array",
-            "description": "List of exploration events captured in this session chunk",
-            "items": {
-                "$ref": "#/$defs/ExplorationEvent"
-            }
-        },
-        "ae": {
-            "type": "array",
-            "description": "List of action events captured in this session chunk",
-            "items": {
-                "$ref": "#/$defs/ActionEvent"
-            }
-        }
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "https://opentech-ux.github.io/sessionCapture-format",
+  "type": "object",
+  "title": "Session Capture",
+  "description": "A collection of LOMs and events captured during a certain time frame",
+  "additionalProperties": true,
+  "properties": {
+    "ts": {
+      "$ref": "#/$defs/TimeStamp",
+      "description": "Start time of this session chunk"
     },
-    "required": [
-        "ts",
-        "sid"
-    ],
-    "$defs": {
-        "TimeStamp": {
-            "type": "number",
-            "description": "An instant in time mesured as the number of ellapsed milliseconds since 1970-01-01 00:00:00 UTC"
-        },
-        "Dimension": {
-            "type": "integer",
-            "description": "Size of a graphical element along an axis",
-            "minimum": 0
-        },
-        "Bounds": {
-            "type": "array",
-            "description": "Coordinates of an axis-aligned rectangle",
-            "additionalItems": false,
-            "minItems": 4,
-            "items": [
-                {
-                    "type": "integer",
-                    "description": "X coordinate of the upper-left corner of the bounds in pixels"
-                },
-                {
-                    "type": "integer",
-                    "description": "Y coordinate of the upper-left corner of the bounds in pixels"
-                },
-                {
-                    "$ref": "#/$defs/Dimension",
-                    "description": "Width of the bounds in pixels"
-                },
-                {
-                    "$ref": "#/$defs/Dimension",
-                    "description": "Height of the bounds in pixels"
-                }
-            ]
-        },
-        "Zone": {
-            "type": "object",
-            "description": "Representation of a zone on screen",
-            "additionalItems": false,
-            "properties": {
-                "id": {
-                    "type": "string",
-                    "description": "Unique ID of this zone in its LOM"
-                },
-                "b": {
-                    "$ref": "#/$defs/Bounds",
-                    "description": "Coordinates of the area occupied by this zone relative to the parent zone"
-                },
-                "c": {
-                    "type": "array",
-                    "description": "List of children zones of this zone",
-                    "items": {
-                        "$ref": "#/$defs/Zone"
-                    }
-                },
-                "s": {
-                    "type": "object",
-                    "description": "Styling information for zone rendering",
-                    "additionalProperties": false,
-                    "properties": {
-                        "bg": {
-                            "type": "string",
-                            "description": "Background styling in CSS format"
-                        },
-                        "b": {
-                            "type": "string",
-                            "description": "Border styling in CSS format"
-                        }
-                    }
-                }
-            },
-            "required": [
-                "bounds"
-            ]
-        },
-        "LOM": {
-            "type": "object",
-            "description": "Specification of the wireframe of a single Web page",
-            "additionalProperties": true,
-            "properties": {
-                "ts": {
-                    "$ref": "#/$defs/TimeStamp",
-                    "description": "Instant of this LOM capture relative to the session chunk timeStamp"
-                },
-                "w": {
-                    "$ref": "#/$defs/Dimension",
-                    "description": "Global page width"
-                },
-                "h": {
-                    "$ref": "#/$defs/Dimension",
-                    "description": "Global page height"
-                },
-                "t": {
-                    "type": "string",
-                    "description": "Page title to help identify the LOM"
-                },
-                "u": {
-                    "type": "string",
-                    "description": "Page URL to help identify the LOM"
-                },
-                "r": {
-                    "$ref": "#/$defs/Zone",
-                    "description": "Root zone corresponding to the  HTML body element"
-                }
-            },
-            "required": [
-                "ts",
-                "w",
-                "h",
-                "r"
-            ]
-        },
-        "ExplorationEvent": {
-            "type": "string",
-            "description": "Information about an exploration event (mouse move, scrolling, keyboard navigation, ...)"
-        },
-        "ActionEvent": {
-            "type": "string",
-            "description": "Information about an action event (mouse click, keystroke, drag & drop, ...)"
-        }
+    "sid": {
+      "type": "string",
+      "description": "Unique id identifying the current session"
+    },
+    "uid": {
+      "type": "string",
+      "description": "Unique id identifying anonymously the current user"
+    },
+    "loms": {
+      "type": "array",
+      "description": "List of LOMs captured in this session chunk",
+      "items": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/Lom"
+          },
+          {
+            "$ref": "#/$defs/LomRef"
+          }
+        ]
+      }
+    },
+    "ee": {
+      "type": "array",
+      "description": "List of exploration events captured in this session chunk",
+      "items": {
+        "$ref": "#/$defs/ExplorationEvent"
+      }
+    },
+    "ae": {
+      "type": "array",
+      "description": "List of action events captured in this session chunk",
+      "items": {
+        "$ref": "#/$defs/ActionEvent"
+      }
     }
+  },
+  "required": [
+    "ts",
+    "sid"
+  ],
+  "$defs": {
+    "TimeStamp": {
+      "type": "number",
+      "description": "An instant in time mesured as the number of ellapsed milliseconds since 1970-01-01 00:00:00 UTC"
+    },
+    "Dimension": {
+      "type": "integer",
+      "description": "Size of a graphical element along an axis",
+      "minimum": 0
+    },
+    "Bounds": {
+      "type": "array",
+      "description": "Coordinates of an axis-aligned rectangle",
+      "additionalItems": false,
+      "minItems": 4,
+      "items": [
+        {
+          "type": "integer",
+          "description": "X coordinate of the upper-left corner of the bounds in pixels"
+        },
+        {
+          "type": "integer",
+          "description": "Y coordinate of the upper-left corner of the bounds in pixels"
+        },
+        {
+          "$ref": "#/$defs/Dimension",
+          "description": "Width of the bounds in pixels"
+        },
+        {
+          "$ref": "#/$defs/Dimension",
+          "description": "Height of the bounds in pixels"
+        }
+      ]
+    },
+    "Zone": {
+      "type": "object",
+      "description": "Representation of a zone on screen",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique ID of this zone in its LOM"
+        },
+        "b": {
+          "$ref": "#/$defs/Bounds",
+          "description": "Coordinates of the area occupied by this zone relative to the parent zone"
+        },
+        "c": {
+          "type": "array",
+          "description": "List of children zones of this zone",
+          "items": {
+            "$ref": "#/$defs/Zone"
+          }
+        },
+        "s": {
+          "type": "object",
+          "description": "Styling information for zone rendering",
+          "additionalProperties": false,
+          "properties": {
+            "bg": {
+              "type": "string",
+              "description": "Background styling in CSS format"
+            },
+            "b": {
+              "type": "string",
+              "description": "Border styling in CSS format"
+            }
+          }
+        }
+      },
+      "required": [
+        "b"
+      ]
+    },
+    "Lom": {
+      "type": "object",
+      "description": "Specification of the wireframe of a single Web page",
+      "additionalProperties": true,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique ID for this LOM in the context of current session"
+        },
+        "ts": {
+          "$ref": "#/$defs/TimeStamp",
+          "description": "Instant of this LOM capture relative to the session chunk timeStamp"
+        },
+        "w": {
+          "$ref": "#/$defs/Dimension",
+          "description": "Global page width"
+        },
+        "h": {
+          "$ref": "#/$defs/Dimension",
+          "description": "Global page height"
+        },
+        "t": {
+          "type": "string",
+          "description": "Page title to help identify the LOM"
+        },
+        "u": {
+          "type": "string",
+          "description": "Page URL to help identify the LOM"
+        },
+        "r": {
+          "$ref": "#/$defs/Zone",
+          "description": "Root zone corresponding to the  HTML body element"
+        }
+      },
+      "required": [
+        "ts",
+        "w",
+        "h",
+        "r"
+      ]
+    },
+    "LomRef": {
+      "type": "object",
+      "description": "Reference to a LOM previously captured",
+      "additionalProperties": false,
+      "properties": {
+        "ts": {
+          "$ref": "#/$defs/TimeStamp",
+          "description": "Instant of this LOM capture relative to the session chunk timeStamp"
+        },
+        "ref": {
+          "type": "string",
+          "description": "ID of the referenced LOM"
+        }
+      },
+      "required": [
+        "ts",
+        "ref"
+      ]
+    },
+    "ExplorationEvent": {
+      "type": "string",
+      "description": "Information about an exploration event (mouse move, scrolling, keyboard navigation, ...)"
+    },
+    "ActionEvent": {
+      "type": "string",
+      "description": "Information about an action event (mouse click, keystroke, drag & drop, ...)"
+    }
+  }
 }

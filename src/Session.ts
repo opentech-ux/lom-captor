@@ -3,9 +3,10 @@ import consola from 'consola';
 import { detectAnyAdblocker } from 'just-detect-adblock';
 import { SessionChunk } from './model/SessionChunk';
 import { ResolvedSettings, Settings, withDefaults } from './Settings';
-import { LOM } from './model/LOM';
+import { Lom } from './model/Lom';
 import { Point } from './model/Point';
 import { ExplorationEvent } from './model/ExplorationEvent';
+import { LomRef } from './model/LomRef';
 
 function getOrCreateSessionId(): string {
     let sessionId = sessionStorage.getItem('opentech-ux-sessionId');
@@ -62,13 +63,13 @@ const commonPostConfig: RequestInit = {
 export class Session {
     private readonly settings: ResolvedSettings;
 
-    private readonly sessionId: string;
+    public readonly sessionId: string;
 
-    private readonly userId?: string;
+    public readonly userId?: string;
 
     private currentChunk: SessionChunk;
 
-    private lastLom?: LOM;
+    private lastLom?: Lom;
 
     private lastMousePosition?: Point;
 
@@ -78,6 +79,8 @@ export class Session {
 
     private hasAdblock = false;
 
+    private readonly lomCache: { [k: string]: Lom } = {};
+
     constructor(settings: Settings) {
         this.settings = withDefaults(settings);
         this.sessionId = getOrCreateSessionId();
@@ -86,7 +89,7 @@ export class Session {
     }
 
     private resetSessionChunk() {
-        this.currentChunk = new SessionChunk(this.sessionId, this.userId);
+        this.currentChunk = new SessionChunk(this);
     }
 
     private httpPost(payload: string) {
@@ -115,14 +118,21 @@ export class Session {
         }
     }
 
-    /** Capture current LOM and register it in session if it differs significantly from last captured LOM. */
+    private registerLom(lom: Lom): Lom | LomRef {
+        if (this.lomCache[lom.id]) return new LomRef(lom, lom.timeStamp);
+        this.lomCache[lom.id] = lom;
+        return lom;
+    }
+
+    /** Capture current LOM and register it in session if it differs significantly from last captured Lom. */
     public captureLOM() {
         this.trackDomChanges = false;
-        const lom = LOM.capture();
+        const lom = Lom.capture();
         if (!this.lastLom || !lom.isSimilar(this.lastLom, this.settings.globalTolerance)) {
             this.lastLom = lom;
-            this.currentChunk.loms.push(lom);
-            if (this.settings.devMode) consola.debug(JSON.stringify(lom));
+            const lomOrRef = this.registerLom(lom);
+            this.currentChunk.loms.push(lomOrRef);
+            if (this.settings.devMode) consola.debug(JSON.stringify(lomOrRef));
         }
         this.trackDomChanges = true;
     }
