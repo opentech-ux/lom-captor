@@ -7,6 +7,7 @@ import { Lom } from './model/Lom';
 import { Point } from './model/Point';
 import { ExplorationEvent } from './model/ExplorationEvent';
 import { LomRef } from './model/LomRef';
+import { ActionEvent } from './model/ActionEvent';
 
 function getOrCreateSessionId(): string {
     let sessionId = sessionStorage.getItem('opentech-ux-sessionId');
@@ -35,6 +36,31 @@ function getZoneId(element: HTMLElement): string | undefined {
     if (element.dataset.opentechUxZoneId) return element.dataset.opentechUxZoneId;
     if (element.parentElement) return getZoneId(element.parentElement);
     return undefined;
+}
+
+/** Build a mask containing keyboard modifiers */
+function getEventModifiers(event: MouseEvent): number {
+    let result = 0;
+
+    if (event.getModifierState('Shift')) {
+        result += 1;
+    }
+
+    if (event.getModifierState('Control')) {
+        result += 2;
+    }
+
+    if (
+        event.getModifierState('Fn') ||
+        event.getModifierState('Hyper') ||
+        event.getModifierState('OS') ||
+        event.getModifierState('Super') ||
+        event.getModifierState('Win') /* hack for IE */
+    ) {
+        result += 4;
+    }
+
+    return result;
 }
 
 function distSquared(x1: number, y1: number, x2: number, y2: number): number {
@@ -137,6 +163,22 @@ export class Session {
         this.trackDomChanges = true;
     }
 
+    /** Capture a mouse click event */
+    public saveClickEvent(event: MouseEvent) {
+        const mousePosition = { x: event.pageX, y: event.pageY };
+
+        const actionEvent = new ActionEvent(
+            event.timeStamp,
+            'C',
+            getZoneId(event.target as HTMLElement),
+            getEventModifiers(event),
+            mousePosition
+        );
+
+        this.currentChunk.actionEvents.push(actionEvent);
+        if (this.settings.devMode) consola.debug(JSON.stringify(actionEvent));
+    }
+
     /** Capture mouse moves and register it in session if mouse position differs significantly from last capture. */
     public saveMouseMoveEvent() {
         if (!this.currentMouseEvent) return;
@@ -200,7 +242,7 @@ export class Session {
     }
 
     private setupActionEventListeners() {
-        // document.body.addEventListener('click', (event) => saveLastMouseDown(event), false);
+        document.body.addEventListener('click', (event) => this.saveClickEvent(event), false);
         // document.body.addEventListener('mousedown', (event) => setEvent(event), false);
         // document.body.addEventListener('dragstart', (event) => setEvent(event), false);
         // document.body.addEventListener('drop', (event) => setEvent(event), false);
