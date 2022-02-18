@@ -10,6 +10,13 @@ export async function startCapture(settings: Settings) {
     await new Session(settings).startCapture();
 }
 
+
+/**
+ * @description Function to manually start the monitoring.
+ * @param {import('../types/ScriptConfiguration').ScriptConfiguration} config Configuration for the script init.
+ */
+ export const start = (scriptSettings) => startCapture(fromDataset(scriptSettings));
+
 document.onreadystatechange = async () => {
     if (document.readyState === 'complete' && scriptSettings.endpoint) {
         await startCapture(fromDataset(scriptSettings));
