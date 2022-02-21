@@ -8,6 +8,7 @@ import { Point } from './model/Point';
 import { ExplorationEvent } from './model/ExplorationEvent';
 import { LomRef } from './model/LomRef';
 import { ActionEvent } from './model/ActionEvent';
+import { LIB_VERSION } from '../build/version';
 
 function getOrCreateSessionId(): string {
     let sessionId = sessionStorage.getItem('opentech-ux-sessionId');
@@ -252,7 +253,7 @@ export class Session {
 
     /** Start capture of UX session. */
     public async startCapture() {
-        if (this.settings.devMode) consola.start('Setting up OpenTech UX analysis');
+        if (this.settings.devMode) consola.start(`Setting up OpenTech UX lib v${LIB_VERSION}`);
 
         detectAnyAdblocker().then((hasAdblock: boolean) => {
             this.hasAdblock = hasAdblock;
@@ -274,6 +275,6 @@ export class Session {
         // Flush UX data buffer every Settings.bufferTimeoutMs.
         setInterval(() => this.flush(), this.settings.bufferTimeoutMs);
 
-        if (this.settings.devMode) consola.ready('OpenTech UX analysis is running');
+        consola.ready(`OpenTech UX lib v${LIB_VERSION} is running`);
     }
 }

@@ -67,9 +67,10 @@
   },
   "scripts": {
     "build:clean": "rimraf ./build",
-    "build:dev": "npm run model:generate && webpack --config webpack.dev.js",
-    "build:prod": "npm run model:generate && webpack --config webpack.prod.js",
+    "build:dev": "npm run model:generate && npm run version:generate && webpack --config webpack.dev.js",
+    "build:prod": "npm run model:generate && npm run version:generate && webpack --config webpack.prod.js",
     "deps:refresh": "rimraf ./node_modules ./package-lock.json && npm install",
+    "version:generate": "node -p \"'export const LIB_VERSION = ' + JSON.stringify(require('./package.json').version) + ';'\" > build/version.ts",
     "model:generate": "json2ts -i ./schemas/ -o ./build/json-schema/",
     "eslint:format": "eslint --ext .js,.jsx --ignore-path .prettierignore . --fix",
     "prettier:format": "prettier \"./**/*.{js,jsx}\" --ignore-path .prettierignore -l --write",
