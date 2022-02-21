@@ -5,29 +5,26 @@ import { Session } from './Session';
 const scriptSettings = document.currentScript.dataset;
 
 /** Start capturing UX session. */
-export async function startCapture(settings: Settings) {
+async function startCapture(settings: Settings) {
     if (settings.devMode) consola.level = LogLevel.Debug;
     await new Session(settings).startCapture();
 }
 
-
 /**
- * @description Function to manually start the monitoring.
- * @param {import('../types/ScriptConfiguration').ScriptConfiguration} config Configuration for the script init.
+ * Manually start capturing UX session.
+ * @param config configuration of the capture.
  */
- export const start = (scriptSettings: DOMStringMap) => {
-    if (document.readyState === 'complete'){
-        startCapture(fromDataset(scriptSettings));
-    }else{
+export function start(config: Settings) {
+    if (document.readyState === 'complete') {
+        startCapture(config);
+    } else {
         document.onreadystatechange = async () => {
             if (document.readyState === 'complete') {
-                await startCapture(fromDataset(scriptSettings));
+                await startCapture(config);
             }
         };
     }
-
-     
- }
+}
 
 document.onreadystatechange = async () => {
     if (document.readyState === 'complete' && scriptSettings.endpoint) {
