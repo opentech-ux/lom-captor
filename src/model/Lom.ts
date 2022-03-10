@@ -50,10 +50,13 @@ export class Lom implements TimeStamped<Lom>, Serializable<LomJson> {
     }
 
     public toJSON(): LomJson {
-        return {
+        const result: LomJson = {
             id: this.id,
             ts: this.timeStamp,
             ...this.content.toJSON(),
         };
+        if (this.url !== undefined) result.u = this.url;
+        if (this.title !== undefined) result.t = this.title;
+        return result;
     }
 }
