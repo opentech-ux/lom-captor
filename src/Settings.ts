@@ -12,6 +12,9 @@ export interface Settings {
     /** Tolerance for LOM comparison. Defaults to 20 pixels. */
     readonly globalTolerance?: number;
 
+    /** Boolean indicating if the lib captures LOM URL and title to help contextualisation. Defaults to `false`. */
+    readonly captureLomContext?: boolean;
+
     /** Boolean indicating if the lib operates in dev mode (with more verbose logs). Defaults to `false`. */
     readonly devMode?: boolean;
 }
@@ -34,6 +37,7 @@ export function withDefaults(settings: Settings): ResolvedSettings {
         bufferTimeoutMs: 10000,
         globalTolerance: 20,
         devMode: false,
+        captureLomContext: false,
         ...removeUndefinedProperties(settings),
     };
 }

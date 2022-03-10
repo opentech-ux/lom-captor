@@ -154,7 +154,7 @@ export class Session {
     /** Capture current LOM and register it in session if it differs significantly from last captured Lom. */
     public captureLOM() {
         this.trackDomChanges = false;
-        const lom = Lom.capture();
+        const lom = Lom.capture(this.settings.captureLomContext);
         if (!this.lastLom || !lom.isSimilar(this.lastLom, this.settings.globalTolerance)) {
             this.lastLom = lom;
             const lomOrRef = this.registerLom(lom);
