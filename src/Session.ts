@@ -86,7 +86,7 @@ const commonPostConfig: RequestInit = {
     referrerPolicy: 'no-referrer',
 };
 
-/** A chunk of captured session with LOMs, exploration events and action events. */
+/** A session with LOMs, exploration events and action events. */
 export class Session {
     private readonly settings: ResolvedSettings;
 
