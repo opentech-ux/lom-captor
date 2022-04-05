@@ -6,6 +6,7 @@ import { Serializable } from './Serializable';
 import { SessionCapture as SessionChunkJson } from '../../build/json-schema/sessionCapture.schema';
 import { Session } from '../Session';
 import { LomRef } from './LomRef';
+import { LIB_VERSION } from '../../build/version';
 
 /** A chunk of captured session with LOMs, exploration events and action events. */
 export class SessionChunk implements TimeStamped<SessionChunk>, Serializable<SessionChunkJson> {
@@ -41,7 +42,12 @@ export class SessionChunk implements TimeStamped<SessionChunk>, Serializable<Ses
 
     public toJSON(): SessionChunkJson {
         const t0 = this.timeStamp;
-        const result: SessionChunkJson = { ts: t0, sid: this.session.sessionId, uid: this.session.userId };
+        const result: SessionChunkJson = {
+            lib_v: LIB_VERSION,
+            ts: t0,
+            sid: this.session.sessionId,
+            uid: this.session.userId,
+        };
 
         function toJsonArrayIfNotEmpty<S, T extends TimeStamped<T> & Serializable<S>>(array?: T[]): S[] | undefined {
             return array.length ? array.map((e) => e.relativizeTime(t0).toJSON()) : undefined;
