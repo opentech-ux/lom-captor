@@ -94,6 +94,8 @@ export class Session {
 
     public readonly userId?: string;
 
+    private readonly eventTimestampOffset: number;
+
     private currentChunk: SessionChunk;
 
     private lastLom?: Lom;
@@ -112,6 +114,7 @@ export class Session {
         this.settings = withDefaults(settings);
         this.sessionId = getOrCreateSessionId();
         this.userId = this.settings.trackUser ? getOrCreateUserId() : undefined;
+        this.eventTimestampOffset = Date.now() - document.timeline.currentTime;
         this.resetSessionChunk();
     }
 
@@ -129,7 +132,7 @@ export class Session {
         this.httpPost(payload);
         // No-OP loop to wait for request sending
         let n = 0;
-        // eslint-disable-next-line no-unused-vars
+        // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
         for (let i = 0; i < 10000; i += 1) n += 1;
     }
 
@@ -169,7 +172,7 @@ export class Session {
         const mousePosition = { x: event.pageX, y: event.pageY };
 
         const actionEvent = new ActionEvent(
-            event.timeStamp,
+            Math.round(event.timeStamp + this.eventTimestampOffset),
             'C',
             getZoneId(event.target as HTMLElement),
             getEventModifiers(event),
@@ -190,7 +193,7 @@ export class Session {
 
         this.lastMousePosition = newMousePosition;
         const explorationEvent = new ExplorationEvent(
-            this.currentMouseEvent.timeStamp,
+            Math.round(this.currentMouseEvent.timeStamp + this.eventTimestampOffset),
             this.currentMouseEvent.type,
             getScrollPosition(),
             newMousePosition
@@ -203,7 +206,7 @@ export class Session {
     /** Capture focus change event. */
     public saveFocusEvent(event: FocusEvent) {
         const explorationEvent = new ExplorationEvent(
-            event.timeStamp,
+            Math.round(event.timeStamp + this.eventTimestampOffset),
             event.type,
             getScrollPosition(),
             undefined,
