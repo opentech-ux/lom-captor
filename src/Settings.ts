@@ -1,6 +1,6 @@
 /** Settings for capture lib. */
 export interface Settings {
-    /** Custom attribute to add to captured data. */
+    /** URL to which data are sent during the capture process. */
     readonly endpoint: string;
 
     /** Boolean indicating if the lib should track user across sessions. Defaults to `false`. */
