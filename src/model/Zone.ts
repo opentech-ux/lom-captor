@@ -8,7 +8,7 @@ const nodeNameFilter = ['HEAD', 'SCRIPT', 'svg', 'symbol', 'defs', 'path'];
 /* eslint-disable no-underscore-dangle */
 /** An area on screen that can be subdivided in smaller sub-zones. */
 export class Zone implements Serializable<ZoneJson> {
-    /** Bounding rectangle of this zone in local coordinates (ie relative to parent zone). */
+    /** Parent zone of this zone. */
     public readonly parent?: Zone;
 
     /** Unique ID of the zone in the context of its owning LOM. */

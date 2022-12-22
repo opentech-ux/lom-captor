@@ -21,12 +21,7 @@ export class Lom implements TimeStamped<Lom>, Serializable<LomJson> {
     /** Unique id of this LOM. */
     public readonly id: string;
 
-    private constructor(
-        title: string | undefined,
-        url: string | undefined,
-        content: LomContent,
-        timeStamp = Date.now()
-    ) {
+    private constructor(content: LomContent, title?: string, url?: string, timeStamp = Date.now()) {
         this.timeStamp = timeStamp;
         this.title = title || undefined;
         this.url = url || undefined;
@@ -35,13 +30,14 @@ export class Lom implements TimeStamped<Lom>, Serializable<LomJson> {
     }
 
     /** Capture the LOM corresponding to the current DOM. */
-    public static capture(): Lom {
-        return new Lom(document.title, document.location.href, LomContent.capture());
+    public static capture(withContext: boolean): Lom {
+        const content = LomContent.capture();
+        return withContext ? new Lom(content, document.title, document.location.href) : new Lom(content);
     }
 
     /** Return a copy of this LOM with the timestamp relativized to specified time origin. */
     public relativizeTime(t0: number): Lom {
-        return new Lom(this.title, this.url, this.content, this.timeStamp - t0);
+        return new Lom(this.content, this.title, this.url, this.timeStamp - t0);
     }
 
     /** Check if this LOM is similar in shape with other LOM, with a specified tolerance. */
@@ -50,10 +46,13 @@ export class Lom implements TimeStamped<Lom>, Serializable<LomJson> {
     }
 
     public toJSON(): LomJson {
-        return {
+        const result: LomJson = {
             id: this.id,
             ts: this.timeStamp,
             ...this.content.toJSON(),
         };
+        if (this.url !== undefined) result.u = this.url;
+        if (this.title !== undefined) result.t = this.title;
+        return result;
     }
 }
