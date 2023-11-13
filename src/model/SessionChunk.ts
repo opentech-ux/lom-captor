@@ -7,6 +7,8 @@ import { SessionCapture as SessionChunkJson } from '../../build/json-schema/sess
 import { Session } from '../Session';
 import { LomRef } from './LomRef';
 import { LIB_VERSION } from '../../build/version';
+import { PerformanceTiming } from './PerformanceTiming';
+import { PerformanceResourceTiming } from './PerformanceResourceTiming';
 
 /** A chunk of captured session with LOMs, exploration events and action events. */
 export class SessionChunk implements TimeStamped<SessionChunk>, Serializable<SessionChunkJson> {
@@ -25,6 +27,12 @@ export class SessionChunk implements TimeStamped<SessionChunk>, Serializable<Ses
     /** List of action events captured in this session chunk. */
     public readonly actionEvents: ActionEvent[] = [];
 
+    /** List of page load time measures. */
+    public readonly performanceTiming: PerformanceTiming[] = [];
+
+    /** List of page resource load time measures. */
+    public readonly performanceResourceTiming: PerformanceResourceTiming[] = [];
+
     constructor(session: Session, timeStamp = Date.now()) {
         this.timeStamp = timeStamp;
         this.session = session;
@@ -32,7 +40,13 @@ export class SessionChunk implements TimeStamped<SessionChunk>, Serializable<Ses
 
     /** Test if this session chunk contains any data to send. */
     public hasContent(): boolean {
-        return this.loms.length > 0 || this.explorationEvents.length > 0 || this.actionEvents.length > 0;
+        return (
+            this.loms.length > 0 ||
+            this.explorationEvents.length > 0 ||
+            this.actionEvents.length > 0 ||
+            this.performanceTiming.length > 0 ||
+            this.performanceResourceTiming.length > 0
+        );
     }
 
     /** Return this as SessionChunks cannot be relativized. */
@@ -56,6 +70,8 @@ export class SessionChunk implements TimeStamped<SessionChunk>, Serializable<Ses
         result.loms = toJsonArrayIfNotEmpty(this.loms);
         result.ee = toJsonArrayIfNotEmpty(this.explorationEvents);
         result.ae = toJsonArrayIfNotEmpty(this.actionEvents);
+        result.pt = toJsonArrayIfNotEmpty(this.performanceTiming);
+        result.prt = toJsonArrayIfNotEmpty(this.performanceResourceTiming);
 
         return result;
     }

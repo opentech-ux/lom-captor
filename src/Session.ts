@@ -9,6 +9,12 @@ import { ExplorationEvent } from './model/ExplorationEvent';
 import { LomRef } from './model/LomRef';
 import { ActionEvent } from './model/ActionEvent';
 import { LIB_VERSION } from '../build/version';
+import { PerformanceTiming } from './model/PerformanceTiming';
+import { PerformanceResourceTiming as ResourceTiming } from './model/PerformanceResourceTiming';
+import {
+    PerformanceResourceTiming as PerformanceResourceTimingChunkJson,
+    PerformanceTiming as PerformanceTimingChunkJson,
+} from '../build/json-schema/sessionCapture.schema';
 
 function getOrCreateSessionId(): string {
     let sessionId = sessionStorage.getItem('opentech-ux-sessionId');
@@ -139,6 +145,7 @@ export class Session {
     /** Send data collected so far and reset current session chunk for upcoming data. */
     public flush(async = true) {
         if (this.currentChunk.hasContent()) {
+            this.setPerformanceTiming('performanceResourceTiming');
             const payload = JSON.stringify(this.currentChunk);
             if (this.hasAdblock || !navigator.sendBeacon(this.settings.endpoint, payload)) {
                 if (async) this.httpPost(payload);
@@ -246,12 +253,119 @@ export class Session {
     }
 
     private setupActionEventListeners() {
-        document.body.addEventListener('click', (event) => this.saveClickEvent(event), false);
+        document.body.addEventListener(
+            'click',
+            (event) => {
+                sessionStorage.setItem(
+                    'triggerOrigin',
+                    JSON.stringify({ eventTs: new Date().getTime(), lomIdOrigin: this.lastLom.id })
+                );
+                this.saveClickEvent(event);
+            },
+            false
+        );
+
         // document.body.addEventListener('mousedown', (event) => setEvent(event), false);
         // document.body.addEventListener('dragstart', (event) => setEvent(event), false);
         // document.body.addEventListener('drop', (event) => setEvent(event), false);
         // document.body.addEventListener('dragend', (event) => setEvent(event), false);
         // document.body.addEventListener('keyup', (event) => filterKeyboard(event), false);
+    }
+
+    private setPerformanceTiming(
+        sessionPerformanceKey: string,
+        newPerformanceTiming?: PerformanceTiming | ResourceTiming
+    ) {
+        let sessionsPerformanceTiming = JSON.parse(sessionStorage.getItem(sessionPerformanceKey)) || [];
+        if (sessionsPerformanceTiming.length > 0) {
+            sessionsPerformanceTiming = sessionsPerformanceTiming.map(
+                (e: PerformanceTimingChunkJson | PerformanceResourceTimingChunkJson) => {
+                    let res: ResourceTiming | PerformanceTiming;
+                    if (sessionPerformanceKey === 'performanceTiming') {
+                        const element: PerformanceTimingChunkJson = e;
+                        res = new PerformanceTiming(
+                            element.ots,
+                            element.its,
+                            element.cts,
+                            element.ets,
+                            element.ilt,
+                            element.clt,
+                            element.lo,
+                            element.le
+                        );
+                    } else {
+                        const element: PerformanceResourceTimingChunkJson = e;
+                        res = new ResourceTiming(element.n, element.st, element.re, element.et, element.d);
+                    }
+
+                    return res;
+                }
+            );
+        }
+
+        const sessionStorageTiming: (PerformanceTiming | ResourceTiming)[] = [...sessionsPerformanceTiming];
+        if (newPerformanceTiming) sessionStorageTiming.push(newPerformanceTiming);
+
+        sessionStorage.setItem(sessionPerformanceKey, JSON.stringify(sessionStorageTiming));
+
+        if (sessionPerformanceKey === 'performanceTiming')
+            this.currentChunk.performanceTiming.push(...(sessionStorageTiming as PerformanceTiming[]));
+        else {
+            this.currentChunk.performanceResourceTiming.length = 0;
+            this.currentChunk.performanceResourceTiming.push(...(sessionStorageTiming as ResourceTiming[]));
+        }
+    }
+
+    private async capturePerformanceTiming() {
+        const originTs: number = window.performance.timeOrigin;
+        const interactiveTs: number =
+            originTs + (window.performance.getEntriesByType('navigation')[0] as any).domInteractive;
+        const completeTs: number = originTs + (window.performance.getEntriesByType('navigation')[0] as any).domComplete;
+        const { eventTs, lomIdOrigin } = JSON.parse(sessionStorage.getItem('triggerOrigin')) || {
+            eventTs: 0,
+            lomIdOrigin: 0,
+        };
+        const startTs: number =
+            eventTs === 0 || (performance.getEntriesByType('navigation')[0] as any).type === 'reload'
+                ? originTs
+                : eventTs;
+        const interactiveLoadingTime = Number(((interactiveTs - startTs) / 1000).toFixed(2));
+        const completeLoadingTime = Number(((completeTs - startTs) / 1000).toFixed(2));
+
+        this.setPerformanceTiming(
+            'performanceTiming',
+            new PerformanceTiming(
+                originTs,
+                interactiveTs,
+                completeTs,
+                eventTs,
+                interactiveLoadingTime,
+                completeLoadingTime,
+                lomIdOrigin,
+                this.lastLom.id
+            )
+        );
+    }
+
+    private async capturePerformanceResourceTiming() {
+        const observer = new PerformanceObserver((list) => {
+            list.getEntries().forEach((entry: PerformanceResourceTiming) => {
+                if (entry.duration >= 50) {
+                    this.setPerformanceTiming(
+                        'performanceResourceTiming',
+                        new ResourceTiming(
+                            entry.name,
+                            entry.startTime,
+                            entry.responseEnd,
+                            entry.entryType,
+                            entry.duration
+                        )
+                    );
+                }
+            });
+        });
+
+        observer.observe({ entryTypes: ['resource'] });
     }
 
     /** Start capture of UX session. */
@@ -270,13 +384,21 @@ export class Session {
         // Capture initial LOM
         this.captureLOM();
 
+        // Capture the loading time of a page
+        this.capturePerformanceTiming();
+        this.capturePerformanceResourceTiming();
+
         // Register event listeners
         this.setupDomChangeTracking();
         this.setupExplorationEventListeners();
         this.setupActionEventListeners();
 
         // Flush UX data buffer every Settings.bufferTimeoutMs.
-        setInterval(() => this.flush(), this.settings.bufferTimeoutMs);
+        setInterval(() => {
+            this.flush();
+            sessionStorage.removeItem('performanceTiming');
+            sessionStorage.removeItem('performanceResourceTiming');
+        }, this.settings.bufferTimeoutMs);
 
         consola.ready(`OpenTech UX lib v${LIB_VERSION} is running`);
     }

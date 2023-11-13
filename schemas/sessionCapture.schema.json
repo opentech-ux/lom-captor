@@ -45,6 +45,20 @@
       "items": {
         "$ref": "#/$defs/ActionEvent"
       }
+    },
+    "pt":  {
+      "type": "array",
+      "description": "List of page load time measures",
+      "items": {
+        "$ref": "#/$defs/PerformanceTiming"
+      }
+    },
+    "prt":  {
+      "type": "array",
+      "description": "List of page resource load time measures",
+      "items": {
+        "$ref": "#/$defs/PerformanceResourceTiming"
+      }
     }
   },
   "required": [
@@ -124,6 +138,80 @@
       "required": [
         "b"
       ]
+    },
+    "PerformanceTiming": {
+      "type": "object",
+      "description": "Measure the loading time of a page",
+      "additionalProperties": true,
+      "properties": {
+        "ts": {
+          "$ref": "#/$defs/TimeStamp",
+          "description": "Instant of this PerformanceTiming capture relative to the session chunk timeStamp"
+        },
+        "ots": {
+          "type": "number",
+          "description": "Timestamp when the page starts loading"
+        },
+        "its": {
+          "type": "number",
+          "description": "Timestamp where the page is usable but external resources are not loaded"
+        },
+        "cts": {
+          "type": "number",
+          "description": "Timestamp where the page and all its resources are completely loaded"
+        },
+        "ets": {
+          "type": "number",
+          "description": "Timestamp of the event that triggered the page change"
+        },
+        "ilt": {
+          "type": "number",
+          "description": " Elapsed time in seconds to load the page without external files"
+        },
+        "clt": {
+          "type": "number",
+          "description": "Elapsed time in seconds to load the page with all external files already loaded"
+        },
+        "lo": {
+          "type": "string",
+          "description": "Id of the lom where the triggering event was produced"
+        },
+        "le": {
+          "type": "string",
+          "description": "Id of the lom where the loading time is analyzed"
+        }
+      }
+    },
+    "PerformanceResourceTiming": {
+      "type": "object",
+      "description": "Measures the loading time of external resources of the pages.",
+      "additionalProperties": true,
+      "properties": {
+        "ts": {
+          "$ref": "#/$defs/TimeStamp",
+          "description": "Instant of this PerformanceTiming capture relative to the session chunk timeStamp"
+        },
+        "n": {
+          "type": "string",
+          "description": "Name for the performance entry"
+        },
+        "st": {
+          "type": "number",
+          "description": "First timestamp recorded for the performance entry"
+        },
+        "re": {
+          "type": "number",
+          "description": "Timestamp after the browser receives the last byte of the resource"
+        },
+        "et": {
+          "type": "string",
+          "description": "Type of performance metric that this entry represents"
+        },
+        "d": {
+          "type": "number",
+          "description": "Duration of the performance entry"
+        }
+      }
     },
     "Lom": {
       "type": "object",
