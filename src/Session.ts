@@ -316,7 +316,7 @@ export class Session {
         }
     }
 
-    private async capturePerformanceTiming() {
+    private async captureNavigationTiming() {
         const originTs: number = window.performance.timeOrigin;
         const interactiveTs: number =
             originTs + (window.performance.getEntriesByType('navigation')[0] as any).domInteractive;
@@ -347,7 +347,7 @@ export class Session {
         );
     }
 
-    private async capturePerformanceResourceTiming() {
+    private async captureResourceTiming() {
         const observer = new PerformanceObserver((list) => {
             list.getEntries().forEach((entry: PerformanceResourceTiming) => {
                 if (entry.duration >= 50) {
@@ -385,8 +385,8 @@ export class Session {
         this.captureLOM();
 
         // Capture the loading time of a page
-        this.capturePerformanceTiming();
-        this.capturePerformanceResourceTiming();
+        this.captureNavigationTiming();
+        this.captureResourceTiming();
 
         // Register event listeners
         this.setupDomChangeTracking();
