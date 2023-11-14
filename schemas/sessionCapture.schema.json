@@ -146,7 +146,7 @@
       "properties": {
         "ts": {
           "$ref": "#/$defs/TimeStamp",
-          "description": "Instant of this PerformanceTiming capture relative to the session chunk timeStamp"
+          "description": "Instant of this NavigationTiming capture relative to the session chunk timeStamp"
         },
         "ots": {
           "type": "number",
@@ -189,7 +189,7 @@
       "properties": {
         "ts": {
           "$ref": "#/$defs/TimeStamp",
-          "description": "Instant of this PerformanceTiming capture relative to the session chunk timeStamp"
+          "description": "Instant of this ResourceTiming capture relative to the session chunk timeStamp"
         },
         "n": {
           "type": "string",
