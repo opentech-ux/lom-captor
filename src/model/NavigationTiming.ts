@@ -1,9 +1,9 @@
-import { PerformanceTiming as PerformanceTimingChunkJson } from '../../build/json-schema/sessionCapture.schema';
+import { NavigationTiming as NavigationTimingJson } from '../../build/json-schema/sessionCapture.schema';
 import { Serializable } from './Serializable';
 import { TimeStamped } from './TimeStamped';
 
-/** Measure the loading time of a page. */
-export class PerformanceTiming implements TimeStamped<PerformanceTiming>, Serializable<PerformanceTimingChunkJson> {
+/** Measure the loading navigation time of a page. */
+export class NavigationTiming implements TimeStamped<NavigationTiming>, Serializable<NavigationTimingJson> {
     /** Start time of this performance timing chunk. */
     public readonly timeStamp: number;
 
@@ -57,8 +57,8 @@ export class PerformanceTiming implements TimeStamped<PerformanceTiming>, Serial
     }
 
     /** Return a copy of this PerformanceTiming with the timestamp relativized to specified time origin. */
-    public relativizeTime(t0: number): PerformanceTiming {
-        return new PerformanceTiming(
+    public relativizeTime(t0: number): NavigationTiming {
+        return new NavigationTiming(
             this.originTs,
             this.interactiveTs,
             this.completeTs,
@@ -71,8 +71,8 @@ export class PerformanceTiming implements TimeStamped<PerformanceTiming>, Serial
         );
     }
 
-    public toJSON(): PerformanceTimingChunkJson {
-        const result: PerformanceTimingChunkJson = {
+    public toJSON(): NavigationTimingJson {
+        const result: NavigationTimingJson = {
             ts: this.timeStamp,
             ots: this.originTs,
             its: this.interactiveTs,

@@ -46,18 +46,18 @@
         "$ref": "#/$defs/ActionEvent"
       }
     },
-    "pt":  {
+    "nt":  {
       "type": "array",
       "description": "List of page load time measures",
       "items": {
-        "$ref": "#/$defs/PerformanceTiming"
+        "$ref": "#/$defs/NavigationTiming"
       }
     },
-    "prt":  {
+    "rt":  {
       "type": "array",
       "description": "List of page resource load time measures",
       "items": {
-        "$ref": "#/$defs/PerformanceResourceTiming"
+        "$ref": "#/$defs/ResourceTiming"
       }
     }
   },
@@ -139,7 +139,7 @@
         "b"
       ]
     },
-    "PerformanceTiming": {
+    "NavigationTiming": {
       "type": "object",
       "description": "Measure the loading time of a page",
       "additionalProperties": true,
@@ -182,7 +182,7 @@
         }
       }
     },
-    "PerformanceResourceTiming": {
+    "ResourceTiming": {
       "type": "object",
       "description": "Measures the loading time of external resources of the pages.",
       "additionalProperties": true,
