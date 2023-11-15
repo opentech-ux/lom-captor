@@ -4,7 +4,7 @@ import { TimeStamped } from './TimeStamped';
 
 /** Measures the loading time of external resources of the pages. */
 export class ResourceTiming implements TimeStamped<ResourceTiming>, Serializable<ResourceTimingJson> {
-    /** Start time of this performance ressource timing. */
+    /** Start time of this performance resource timing. */
     public readonly timeStamp: number;
 
     /** Name for the performance entry. */
