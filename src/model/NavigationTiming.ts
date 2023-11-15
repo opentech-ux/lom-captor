@@ -31,9 +31,6 @@ export class NavigationTiming implements TimeStamped<NavigationTiming>, Serializ
     /** Id of the lom where the loading time is analyzed. */
     public readonly lomIdEnd: string;
 
-    /** Id of the lom where the loading time is analyzed. */
-    public readonly resource: [];
-
     constructor(
         originTs?: number,
         interactiveTs?: number,

@@ -145,7 +145,7 @@ export class Session {
     /** Send data collected so far and reset current session chunk for upcoming data. */
     public flush(async = true) {
         if (this.currentChunk.hasContent()) {
-            this.setPerformanceTiming('resourceTiming');
+            // this.setPerformanceTiming('resourceTiming');
             const payload = JSON.stringify(this.currentChunk);
             if (this.hasAdblock || !navigator.sendBeacon(this.settings.endpoint, payload)) {
                 if (async) this.httpPost(payload);
@@ -329,8 +329,8 @@ export class Session {
             eventTs === 0 || (performance.getEntriesByType('navigation')[0] as any).type === 'reload'
                 ? originTs
                 : eventTs;
-        const interactiveLoadingTime = Number(((interactiveTs - startTs) / 1000).toFixed(2));
-        const completeLoadingTime = Number(((completeTs - startTs) / 1000).toFixed(2));
+        const interactiveLoadingTimeMs = (interactiveTs - startTs) / 1000;
+        const completeLoadingTimeMs = (completeTs - startTs) / 1000;
 
         this.setPerformanceTiming(
             'navigationTiming',
@@ -339,14 +339,15 @@ export class Session {
                 interactiveTs,
                 completeTs,
                 eventTs,
-                interactiveLoadingTime,
-                completeLoadingTime,
+                interactiveLoadingTimeMs,
+                completeLoadingTimeMs,
                 lomIdOrigin,
                 this.lastLom.id
             )
         );
     }
 
+    /*
     private async captureResourceTiming() {
         const observer = new PerformanceObserver((list) => {
             list.getEntries().forEach((entry: PerformanceResourceTiming) => {
@@ -367,6 +368,7 @@ export class Session {
 
         observer.observe({ entryTypes: ['resource'] });
     }
+    */
 
     /** Start capture of UX session. */
     public async startCapture() {
@@ -386,7 +388,7 @@ export class Session {
 
         // Capture the loading time of a page
         this.captureNavigationTiming();
-        this.captureResourceTiming();
+        // this.captureResourceTiming();
 
         // Register event listeners
         this.setupDomChangeTracking();
@@ -397,7 +399,7 @@ export class Session {
         setInterval(() => {
             this.flush();
             sessionStorage.removeItem('navigationTiming');
-            sessionStorage.removeItem('resourceTiming');
+            // sessionStorage.removeItem('resourceTiming');
         }, this.settings.bufferTimeoutMs);
 
         consola.ready(`OpenTech UX lib v${LIB_VERSION} is running`);
