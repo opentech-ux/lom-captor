@@ -10,11 +10,6 @@ import { LomRef } from './model/LomRef';
 import { ActionEvent } from './model/ActionEvent';
 import { LIB_VERSION } from '../build/version';
 import { NavigationTiming } from './model/NavigationTiming';
-import { ResourceTiming } from './model/ResourceTiming';
-import {
-    ResourceTiming as ResourceTimingJson,
-    NavigationTiming as NavigationTimingJson,
-} from '../build/json-schema/sessionCapture.schema';
 
 function getOrCreateSessionId(): string {
     let sessionId = sessionStorage.getItem('opentech-ux-sessionId');
@@ -145,7 +140,6 @@ export class Session {
     /** Send data collected so far and reset current session chunk for upcoming data. */
     public flush(async = true) {
         if (this.currentChunk.hasContent()) {
-            // this.setPerformanceTiming('resourceTiming');
             const payload = JSON.stringify(this.currentChunk);
             if (this.hasAdblock || !navigator.sendBeacon(this.settings.endpoint, payload)) {
                 if (async) this.httpPost(payload);
@@ -272,50 +266,6 @@ export class Session {
         // document.body.addEventListener('keyup', (event) => filterKeyboard(event), false);
     }
 
-    private setPerformanceTiming(
-        sessionPerformanceKey: string,
-        newPerformanceTiming?: NavigationTiming | ResourceTiming
-    ) {
-        let sessionsPerformanceTiming = JSON.parse(sessionStorage.getItem(sessionPerformanceKey)) || [];
-        if (sessionsPerformanceTiming.length > 0) {
-            sessionsPerformanceTiming = sessionsPerformanceTiming.map(
-                (e: NavigationTimingJson | ResourceTimingJson) => {
-                    let res: ResourceTiming | NavigationTiming;
-                    if (sessionPerformanceKey === 'navigationTiming') {
-                        const element: NavigationTimingJson = e;
-                        res = new NavigationTiming(
-                            element.ots,
-                            element.its,
-                            element.cts,
-                            element.ets,
-                            element.ilt,
-                            element.clt,
-                            element.from,
-                            element.to
-                        );
-                    } else {
-                        const element: ResourceTimingJson = e;
-                        res = new ResourceTiming(element.n, element.st, element.re, element.et, element.d);
-                    }
-
-                    return res;
-                }
-            );
-        }
-
-        const sessionStorageTiming: (NavigationTiming | ResourceTiming)[] = [...sessionsPerformanceTiming];
-        if (newPerformanceTiming) sessionStorageTiming.push(newPerformanceTiming);
-
-        sessionStorage.setItem(sessionPerformanceKey, JSON.stringify(sessionStorageTiming));
-
-        if (sessionPerformanceKey === 'navigationTiming')
-            this.currentChunk.navigationTiming.push(...(sessionStorageTiming as NavigationTiming[]));
-        else {
-            this.currentChunk.resourceTiming.length = 0;
-            this.currentChunk.resourceTiming.push(...(sessionStorageTiming as ResourceTiming[]));
-        }
-    }
-
     private async captureNavigationTiming() {
         const originTs: number = window.performance.timeOrigin;
         const interactiveTs: number =
@@ -332,8 +282,7 @@ export class Session {
         const interactiveLoadingTimeMs = (interactiveTs - startTs) / 1000;
         const completeLoadingTimeMs = (completeTs - startTs) / 1000;
 
-        this.setPerformanceTiming(
-            'navigationTiming',
+        this.currentChunk.navigationTiming.push(
             new NavigationTiming(
                 originTs,
                 interactiveTs,
@@ -346,29 +295,6 @@ export class Session {
             )
         );
     }
-
-    /*
-    private async captureResourceTiming() {
-        const observer = new PerformanceObserver((list) => {
-            list.getEntries().forEach((entry: PerformanceResourceTiming) => {
-                if (entry.duration >= 50) {
-                    this.setPerformanceTiming(
-                        'resourceTiming',
-                        new ResourceTiming(
-                            entry.name,
-                            entry.startTime,
-                            entry.responseEnd,
-                            entry.entryType,
-                            entry.duration
-                        )
-                    );
-                }
-            });
-        });
-
-        observer.observe({ entryTypes: ['resource'] });
-    }
-    */
 
     /** Start capture of UX session. */
     public async startCapture() {
@@ -398,8 +324,6 @@ export class Session {
         // Flush UX data buffer every Settings.bufferTimeoutMs.
         setInterval(() => {
             this.flush();
-            sessionStorage.removeItem('navigationTiming');
-            // sessionStorage.removeItem('resourceTiming');
         }, this.settings.bufferTimeoutMs);
 
         consola.ready(`OpenTech UX lib v${LIB_VERSION} is running`);
