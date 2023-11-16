@@ -26,10 +26,10 @@ export class NavigationTiming implements TimeStamped<NavigationTiming>, Serializ
     public readonly completeLoadingTime: number;
 
     /** Id of the lom where the triggering event was produced. */
-    public readonly lomIdOrigin: string;
+    public readonly fromLomId: string | null;
 
     /** Id of the lom where the loading time is analyzed. */
-    public readonly lomIdEnd: string;
+    public readonly toLomId: string;
 
     constructor(
         originTs?: number,
@@ -38,8 +38,8 @@ export class NavigationTiming implements TimeStamped<NavigationTiming>, Serializ
         eventTs?: number,
         interactiveLoadingTime?: number,
         completeLoadingTime?: number,
-        lomIdOrigin?: string,
-        lomIdEnd?: string,
+        fromLomId?: string | null,
+        toLomId?: string,
         timeStamp = Date.now()
     ) {
         this.originTs = originTs;
@@ -48,8 +48,8 @@ export class NavigationTiming implements TimeStamped<NavigationTiming>, Serializ
         this.eventTs = eventTs;
         this.interactiveLoadingTime = interactiveLoadingTime;
         this.completeLoadingTime = completeLoadingTime;
-        this.lomIdOrigin = lomIdOrigin;
-        this.lomIdEnd = lomIdEnd;
+        this.fromLomId = fromLomId;
+        this.toLomId = toLomId;
         this.timeStamp = timeStamp;
     }
 
@@ -62,8 +62,8 @@ export class NavigationTiming implements TimeStamped<NavigationTiming>, Serializ
             this.eventTs,
             this.interactiveLoadingTime,
             this.completeLoadingTime,
-            this.lomIdOrigin,
-            this.lomIdEnd,
+            this.fromLomId,
+            this.toLomId,
             this.timeStamp - t0
         );
     }
@@ -77,8 +77,8 @@ export class NavigationTiming implements TimeStamped<NavigationTiming>, Serializ
             ets: this.eventTs,
             ilt: this.interactiveLoadingTime,
             clt: this.completeLoadingTime,
-            lo: this.lomIdOrigin,
-            le: this.lomIdEnd,
+            from: this.fromLomId,
+            to: this.toLomId,
         };
 
         return result;

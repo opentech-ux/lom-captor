@@ -258,7 +258,7 @@ export class Session {
             (event) => {
                 sessionStorage.setItem(
                     'triggerOrigin',
-                    JSON.stringify({ eventTs: new Date().getTime(), lomIdOrigin: this.lastLom.id })
+                    JSON.stringify({ eventTs: new Date().getTime(), fromLomId: this.lastLom.id })
                 );
                 this.saveClickEvent(event);
             },
@@ -290,8 +290,8 @@ export class Session {
                             element.ets,
                             element.ilt,
                             element.clt,
-                            element.lo,
-                            element.le
+                            element.from,
+                            element.to
                         );
                     } else {
                         const element: ResourceTimingJson = e;
@@ -321,9 +321,9 @@ export class Session {
         const interactiveTs: number =
             originTs + (window.performance.getEntriesByType('navigation')[0] as any).domInteractive;
         const completeTs: number = originTs + (window.performance.getEntriesByType('navigation')[0] as any).domComplete;
-        const { eventTs, lomIdOrigin } = JSON.parse(sessionStorage.getItem('triggerOrigin')) || {
+        const { eventTs, fromLomId } = JSON.parse(sessionStorage.getItem('triggerOrigin')) || {
             eventTs: 0,
-            lomIdOrigin: 0,
+            fromLomId: null,
         };
         const startTs: number =
             eventTs === 0 || (performance.getEntriesByType('navigation')[0] as any).type === 'reload'
@@ -341,7 +341,7 @@ export class Session {
                 eventTs,
                 interactiveLoadingTimeMs,
                 completeLoadingTimeMs,
-                lomIdOrigin,
+                fromLomId,
                 this.lastLom.id
             )
         );
