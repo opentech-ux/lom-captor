@@ -46,14 +46,14 @@
         "$ref": "#/$defs/ActionEvent"
       }
     },
-    "nt":  {
+    "pnt":  {
       "type": "array",
       "description": "List of page load time measures",
       "items": {
         "$ref": "#/$defs/NavigationTiming"
       }
     },
-    "rt":  {
+    "prt":  {
       "type": "array",
       "description": "List of page resource load time measures",
       "items": {
