@@ -267,33 +267,46 @@ export class Session {
     }
 
     private async captureNavigationTiming() {
-        const originTs: number = window.performance.timeOrigin;
-        const interactiveTs: number =
-            originTs + (window.performance.getEntriesByType('navigation')[0] as any).domInteractive;
-        const completeTs: number = originTs + (window.performance.getEntriesByType('navigation')[0] as any).domComplete;
-        const { eventTs, fromLomId } = JSON.parse(sessionStorage.getItem('triggerOrigin')) || {
-            eventTs: 0,
-            fromLomId: null,
-        };
-        const startTs: number =
-            eventTs === 0 || (performance.getEntriesByType('navigation')[0] as any).type === 'reload'
-                ? originTs
-                : eventTs;
-        const interactiveLoadingTimeMs = (interactiveTs - startTs) / 1000;
-        const completeLoadingTimeMs = (completeTs - startTs) / 1000;
+        function getTime(time: number | undefined | null): number {
+            try {
+                return typeof time !== 'number' ? 0 : time;
+            } catch {
+                return 0;
+            }
+        }
 
-        this.currentChunk.navigationTimings.push(
-            new NavigationTiming(
-                originTs,
-                interactiveTs,
-                completeTs,
-                eventTs,
-                interactiveLoadingTimeMs,
-                completeLoadingTimeMs,
-                fromLomId,
-                this.lastLom.id
-            )
-        );
+        try {
+            const originTs: number = getTime(performance.timeOrigin);
+            const interactiveTs: number =
+                originTs + getTime((performance?.getEntriesByType('navigation')[0] as any)?.domInteractive);
+            const completeTs: number =
+                originTs + getTime((performance?.getEntriesByType('navigation')[0] as any)?.domComplete);
+
+            const { eventTs, fromLomId } = JSON.parse(sessionStorage.getItem('triggerOrigin')) || {
+                eventTs: 0,
+                fromLomId: null,
+            };
+            const startTs: number =
+                eventTs === 0 || (performance?.getEntriesByType('navigation')[0] as any)?.type === 'reload'
+                    ? originTs
+                    : eventTs;
+            const interactiveLoadingTimeMs = (interactiveTs - startTs) / 1000;
+            const completeLoadingTimeMs = (completeTs - startTs) / 1000;
+
+            this.currentChunk.navigationTimings.push(
+                new NavigationTiming(
+                    originTs,
+                    interactiveTs,
+                    completeTs,
+                    eventTs,
+                    interactiveLoadingTimeMs,
+                    completeLoadingTimeMs,
+                    fromLomId,
+                    this.lastLom.id
+                )
+            );
+            // eslint-disable-next-line no-empty
+        } catch {}
     }
 
     /** Start capture of UX session. */
