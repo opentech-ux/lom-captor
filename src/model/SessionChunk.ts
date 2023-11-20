@@ -28,10 +28,10 @@ export class SessionChunk implements TimeStamped<SessionChunk>, Serializable<Ses
     public readonly actionEvents: ActionEvent[] = [];
 
     /** List of page load navigation time measures. */
-    public readonly navigationTiming: NavigationTiming[] = [];
+    public readonly navigationTimings: NavigationTiming[] = [];
 
     /** List of page resource load time measures. */
-    public readonly resourceTiming: ResourceTiming[] = [];
+    public readonly resourceTimings: ResourceTiming[] = [];
 
     constructor(session: Session, timeStamp = Date.now()) {
         this.timeStamp = timeStamp;
@@ -44,8 +44,8 @@ export class SessionChunk implements TimeStamped<SessionChunk>, Serializable<Ses
             this.loms.length > 0 ||
             this.explorationEvents.length > 0 ||
             this.actionEvents.length > 0 ||
-            this.navigationTiming.length > 0 ||
-            this.resourceTiming.length > 0
+            this.navigationTimings.length > 0 ||
+            this.resourceTimings.length > 0
         );
     }
 
@@ -70,8 +70,8 @@ export class SessionChunk implements TimeStamped<SessionChunk>, Serializable<Ses
         result.loms = toJsonArrayIfNotEmpty(this.loms);
         result.ee = toJsonArrayIfNotEmpty(this.explorationEvents);
         result.ae = toJsonArrayIfNotEmpty(this.actionEvents);
-        result.pnt = toJsonArrayIfNotEmpty(this.navigationTiming);
-        result.prt = toJsonArrayIfNotEmpty(this.resourceTiming);
+        result.pnt = toJsonArrayIfNotEmpty(this.navigationTimings);
+        result.prt = toJsonArrayIfNotEmpty(this.resourceTimings);
 
         return result;
     }

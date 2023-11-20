@@ -282,7 +282,7 @@ export class Session {
         const interactiveLoadingTimeMs = (interactiveTs - startTs) / 1000;
         const completeLoadingTimeMs = (completeTs - startTs) / 1000;
 
-        this.currentChunk.navigationTiming.push(
+        this.currentChunk.navigationTimings.push(
             new NavigationTiming(
                 originTs,
                 interactiveTs,
