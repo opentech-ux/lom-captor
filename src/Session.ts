@@ -281,7 +281,6 @@ export class Session {
                 originTs + getTime((performance?.getEntriesByType('navigation')[0] as any)?.domInteractive);
             const completeTs: number =
                 originTs + getTime((performance?.getEntriesByType('navigation')[0] as any)?.domComplete);
-
             const { eventTs, fromLomId } = JSON.parse(sessionStorage.getItem('triggerOrigin')) || {
                 eventTs: 0,
                 fromLomId: null,
