@@ -9,6 +9,7 @@ import { ExplorationEvent } from './model/ExplorationEvent';
 import { LomRef } from './model/LomRef';
 import { ActionEvent } from './model/ActionEvent';
 import { LIB_VERSION } from '../build/version';
+import { NavigationTiming } from './model/NavigationTiming';
 
 function getOrCreateSessionId(): string {
     let sessionId = sessionStorage.getItem('opentech-ux-sessionId');
@@ -246,12 +247,65 @@ export class Session {
     }
 
     private setupActionEventListeners() {
-        document.body.addEventListener('click', (event) => this.saveClickEvent(event), false);
+        document.body.addEventListener(
+            'click',
+            (event) => {
+                sessionStorage.setItem(
+                    'triggerOrigin',
+                    JSON.stringify({ eventTs: new Date().getTime(), fromLomId: this.lastLom.id })
+                );
+                this.saveClickEvent(event);
+            },
+            false
+        );
+
         // document.body.addEventListener('mousedown', (event) => setEvent(event), false);
         // document.body.addEventListener('dragstart', (event) => setEvent(event), false);
         // document.body.addEventListener('drop', (event) => setEvent(event), false);
         // document.body.addEventListener('dragend', (event) => setEvent(event), false);
         // document.body.addEventListener('keyup', (event) => filterKeyboard(event), false);
+    }
+
+    private async captureNavigationTiming() {
+        function getTime(time: number | undefined | null): number {
+            try {
+                return typeof time !== 'number' ? 0 : time;
+            } catch {
+                return 0;
+            }
+        }
+
+        try {
+            const originTs: number = getTime(performance.timeOrigin);
+            const interactiveTs: number =
+                originTs + getTime((performance?.getEntriesByType('navigation')[0] as any)?.domInteractive);
+            const completeTs: number =
+                originTs + getTime((performance?.getEntriesByType('navigation')[0] as any)?.domComplete);
+            const { eventTs, fromLomId } = JSON.parse(sessionStorage.getItem('triggerOrigin')) || {
+                eventTs: 0,
+                fromLomId: null,
+            };
+            const startTs: number =
+                eventTs === 0 || (performance?.getEntriesByType('navigation')[0] as any)?.type === 'reload'
+                    ? originTs
+                    : eventTs;
+            const interactiveLoadingTimeMs = (interactiveTs - startTs) / 1000;
+            const completeLoadingTimeMs = (completeTs - startTs) / 1000;
+
+            this.currentChunk.navigationTimings.push(
+                new NavigationTiming(
+                    originTs,
+                    interactiveTs,
+                    completeTs,
+                    eventTs,
+                    interactiveLoadingTimeMs,
+                    completeLoadingTimeMs,
+                    fromLomId,
+                    this.lastLom.id
+                )
+            );
+            // eslint-disable-next-line no-empty
+        } catch {}
     }
 
     /** Start capture of UX session. */
@@ -270,13 +324,19 @@ export class Session {
         // Capture initial LOM
         this.captureLOM();
 
+        // Capture the loading time of a page
+        this.captureNavigationTiming();
+        // this.captureResourceTiming();
+
         // Register event listeners
         this.setupDomChangeTracking();
         this.setupExplorationEventListeners();
         this.setupActionEventListeners();
 
         // Flush UX data buffer every Settings.bufferTimeoutMs.
-        setInterval(() => this.flush(), this.settings.bufferTimeoutMs);
+        setInterval(() => {
+            this.flush();
+        }, this.settings.bufferTimeoutMs);
 
         consola.ready(`OpenTech UX lib v${LIB_VERSION} is running`);
     }
