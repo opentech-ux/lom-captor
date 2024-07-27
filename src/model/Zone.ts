@@ -66,6 +66,7 @@ export class Zone implements Serializable<ZoneJson> {
 
         Array.from(element.children)
             .filter((e) => nodeNameFilter.indexOf(e.nodeName) < 0)
+            .filter((e) => !(e as HTMLElement).isContentEditable)
             .filter((e) => getComputedStyle(e).animationIterationCount !== 'infinite')
             .forEach((e) => Zone.capture(e as HTMLElement, currentZone));
 
