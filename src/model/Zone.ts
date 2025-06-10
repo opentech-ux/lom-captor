@@ -64,11 +64,21 @@ export class Zone implements Serializable<ZoneJson> {
             parentZone._children.push(currentZone);
         }
 
+        function getElement(e: HTMLElement | HTMLIFrameElement) {
+            try {
+                return (e.tagName == 'IFRAME')
+                    ? (e as HTMLIFrameElement).contentDocument.body || null
+                    : e as HTMLElement
+            } catch {
+                return e as HTMLElement
+            }
+        }
+
         Array.from(element.children)
             .filter((e) => nodeNameFilter.indexOf(e.nodeName) < 0)
             .filter((e) => !(e as HTMLElement).isContentEditable)
             .filter((e) => getComputedStyle(e).animationIterationCount !== 'infinite')
-            .forEach((e) => Zone.capture(e as HTMLElement, currentZone));
+            .forEach((e) => Zone.capture(getElement(e as HTMLElement | HTMLIFrameElement), currentZone));
 
         return currentZone;
     }
