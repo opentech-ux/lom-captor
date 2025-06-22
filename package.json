@@ -8,7 +8,7 @@
     "js-base64": "^3.7.2",
     "js-sha256": "^0.9.0",
     "just-detect-adblock": "^1.1.0",
-    "luxon": "^2.0.2",
+    "luxon": "^2.5.2",
     "regenerator-runtime": "^0.13.9",
     "uuid": "^8.3.2"
   },
