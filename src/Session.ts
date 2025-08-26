@@ -41,26 +41,15 @@ function getZoneId(element: HTMLElement): string | undefined {
 }
 
 /** Build a mask containing keyboard modifiers */
-function getEventModifiers(event: MouseEvent): number {
+function getEventModifiers(event: MouseEvent | KeyboardEvent): number {
+    const isShift = event && typeof event.shiftKey === "boolean" && event.shiftKey;
+    const isCtrl = event && typeof event.ctrlKey === "boolean" && event.ctrlKey;
+    const isMeta = event && typeof event.metaKey === "boolean" && event.metaKey;
     let result = 0;
 
-    if (event.getModifierState('Shift')) {
-        result += 1;
-    }
-
-    if (event.getModifierState('Control')) {
-        result += 2;
-    }
-
-    if (
-        event.getModifierState('Fn') ||
-        event.getModifierState('Hyper') ||
-        event.getModifierState('OS') ||
-        event.getModifierState('Super') ||
-        event.getModifierState('Win') /* hack for IE */
-    ) {
-        result += 4;
-    }
+    if (isShift) result += 1;
+    if (isCtrl) result += 2;
+    if (isMeta) result += 4;
 
     return result;
 }
