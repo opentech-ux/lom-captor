@@ -112,26 +112,38 @@
           "$ref": "#/$defs/Bounds",
           "description": "Coordinates of the area occupied by this zone relative to the parent zone"
         },
-        "c": {
-          "type": "array",
-          "description": "List of children zones of this zone",
-          "items": {
-            "$ref": "#/$defs/Zone"
-          }
+        "t": {
+          "type": "string",
+          "description": "Tag name of this zone in its LOM"
+        },
+        "wc": {
+          "type": "number",
+          "description": "Word count of this zone in its LOM"
         },
         "s": {
           "type": "object",
           "description": "Styling information for zone rendering",
           "additionalProperties": false,
           "properties": {
-            "bg": {
+            "bc": {
               "type": "string",
-              "description": "Background styling in CSS format"
+              "description": "Background color styling in CSS format"
             },
-            "b": {
+            "c": {
               "type": "string",
-              "description": "Border styling in CSS format"
+              "description": "Color styling in CSS format"
+            },
+            "fs": {
+              "type": "string",
+              "description": "Font size styling in CSS format"
             }
+          }
+        },
+        "c": {
+          "type": "array",
+          "description": "List of children zones of this zone",
+          "items": {
+            "$ref": "#/$defs/Zone"
           }
         }
       },
