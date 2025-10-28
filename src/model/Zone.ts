@@ -14,25 +14,35 @@ export class Zone implements Serializable<ZoneJson> {
     /** Unique ID of the zone in the context of its owning LOM. */
     public readonly zoneId: string;
 
+    /** Tag name of this zone. */
+    public readonly tagName: string;
+
+    /** Word count of this zone. */
+    public readonly wordCount: number;
+
     /** Bounding rectangle of this zone in world coordinates. */
     public readonly bounds: Bounds;
 
     /** Styling info on this zone. */
-    public readonly style?: { readonly background?: string; readonly border?: string };
+    public readonly styles?: { readonly backgroundColor?: string; readonly color?: string, readonly fontSize?: string };
 
     private readonly _children: Zone[];
 
     private constructor(
         parent: Zone | undefined,
         zoneId: string,
+        tagName: string,
+        wordCount: number,
         bounds: Bounds,
-        style?: { background?: string; border?: string }
+        styles?: { readonly backgroundColor?: string; readonly color?: string, readonly fontSize?: string }
     ) {
         this.parent = parent;
         this.zoneId = zoneId;
+        this.tagName = tagName;
+        this.wordCount = wordCount;
         this.bounds = bounds;
         this._children = [];
-        this.style = style;
+        this.styles = styles;
     }
 
     /** Bounding rectangle of this zone in local coordinates (ie relative to parent zone). */
@@ -47,8 +57,27 @@ export class Zone implements Serializable<ZoneJson> {
 
     /** Capture an HTMLElement as a Zone. */
     public static capture(element: HTMLElement, parentZone?: Zone): Zone {
+        // Bounds
         const elementRect = element.getBoundingClientRect();
         const elementBounds = new Bounds(elementRect.x, elementRect.y, elementRect.width, elementRect.height);
+
+        // Tag Name
+        const elementTagName = element.tagName;
+
+        // Word Count
+        // Regex to match words and numbers, including numbers with commas or dots as separators
+        // [\p{L}\p{N}]+ matches one or more letters (\p{L}) or numbers (\p{N})
+        // (?:[.,][\p{N}]+)* non capturing optional group, repeated zero or more times
+        const textContent = element.textContent.trim().match(/\b[\p{L}\p{N}]+(?:[.,][\p{N}]+)*\b/gu);
+        const elementWordCount = textContent ? textContent.length : 0;
+
+        // Styles
+        const computedStyle = getComputedStyle(element);
+        const elementStyles = {
+            "backgroundColor": computedStyle.backgroundColor,
+            "color": computedStyle.color,
+            "fontSize": computedStyle.fontSize,
+        }
 
         function getZoneId(): string {
             if (element.dataset.opentechUxZoneId) return element.dataset.opentechUxZoneId;
@@ -58,9 +87,9 @@ export class Zone implements Serializable<ZoneJson> {
             return newZoneId;
         }
 
-        let currentZone = parentZone ?? new Zone(undefined, getZoneId(), elementBounds);
+        let currentZone = parentZone ?? new Zone(undefined, getZoneId(), elementTagName, elementWordCount, elementBounds, elementStyles);
         if (parentZone && !elementBounds.isEmpty() && !elementBounds.isCoincident(currentZone.bounds)) {
-            currentZone = new Zone(parentZone, getZoneId(), elementBounds);
+            currentZone = new Zone(parentZone, getZoneId(), elementTagName, elementWordCount, elementBounds, elementStyles);
             parentZone._children.push(currentZone);
         }
 
@@ -93,11 +122,12 @@ export class Zone implements Serializable<ZoneJson> {
     }
 
     public toJSON(): ZoneJson {
-        const result: ZoneJson = { id: this.zoneId, b: this.localBounds.toJSON() };
-        if (this.style) {
+        const result: ZoneJson = { id: this.zoneId, t: this.tagName, wc: this.wordCount, b: this.localBounds.toJSON() };
+        if (this.styles) {
             result.s = {};
-            if (this.style.border) result.s.b = this.style.border;
-            if (this.style.background) result.s.bg = this.style.background;
+            if (this.styles.backgroundColor) result.s.bc = this.styles.backgroundColor;
+            if (this.styles.color) result.s.c = this.styles.color;
+            if (this.styles.fontSize) result.s.fs = this.styles.fontSize;
         }
         if (this._children.length) result.c = this._children.map((c) => c.toJSON());
         return result;
