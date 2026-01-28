@@ -1,146 +1,47 @@
 name: Node.js CI
 
 on:
-   push:
-      branches: [develop, master]
-   pull_request:
-      branches: [master]
-      types: [closed]
+    push:
+        branches: [develop, master]
+    pull_request:
+        branches: [develop, master]
 
 jobs:
-   dependencies:
-      runs-on: ubuntu-latest
-      strategy:
-         matrix:
-            node-version: [14]
-      steps:
-         - uses: actions/checkout@v2
+    build-and-test:
+        runs-on: ubuntu-latest
 
-         - name: Use Node.js ${{ matrix.node-version }}
-           uses: actions/setup-node@v2
-           with:
-              node-version: ${{ matrix.node-version }}
-              cache: 'npm'
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
 
-         - name: Cache node_modules
-           id: node-cache
-           uses: actions/cache@v4
-           with:
-              path: node_modules
-              key: ${{ runner.os }}-npm-deps-${{ hashFiles('**/package-lock.json') }}
+            - name: Set up Node.js 20
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+                  cache: 'npm'
 
-         - name: Install
-           if: steps.node-cache.outputs.cache-hit != 'true'
-           run: npm install
+            - name: Install dependencies
+              run: npm ci
 
-   tests:
-      needs: dependencies
-      runs-on: ubuntu-latest
-      strategy:
-         matrix:
-            node-version: [14]
-      steps:
-         - uses: actions/checkout@v2
+            - name: Run linter and unit tests
+              run: |
+                  npm run test:eslint
+                  npm run test:prettier
+                  npm run test:unit
 
-         - name: Use Node.js ${{ matrix.node-version }}
-           uses: actions/setup-node@v2
-           with:
-              node-version: ${{ matrix.node-version }}
-              cache: 'npm'
+            # The build step will only run on direct pushes or merges to develop/master,
+            # not on pull request commits.
+            - name: Build distributions
+              if: github.event_name == 'push'
+              run: |
+                  npm run build:dev
+                  npm run build:prod
 
-         - name: Cache node_modules
-           uses: actions/cache@v4
-           with:
-              path: node_modules
-              key: ${{ runner.os }}-npm-deps-${{ hashFiles('**/package-lock.json') }}
-
-         - name: ESLint
-           run: npm run test:eslint
-
-         - name: Prettier
-           run: npm run test:prettier
-
-         - name: Unit test
-           run: npm run test:unit
-
-   build:
-      if: github.event.pull_request.merged == true || github.event_name == 'push'
-      needs: [dependencies, tests]
-      runs-on: ubuntu-latest
-      strategy:
-         matrix:
-            node-version: [14]
-      steps:
-         - uses: actions/checkout@v2
-
-         - name: Use Node.js ${{ matrix.node-version }}
-           uses: actions/setup-node@v2
-           with:
-              node-version: ${{ matrix.node-version }}
-              cache: 'npm'
-
-         - name: Cache node_modules
-           uses: actions/cache@v2
-           with:
-              path: node_modules
-              key: ${{ runner.os }}-npm-deps-${{ hashFiles('**/package-lock.json') }}
-
-         - name: Development build
-           run: npm run build:dev
-
-         - name: Development upload
-           uses: actions/upload-artifact@v2
-           with:
-              name: dist-dev
-              path: dist-dev/
-
-         - name: Production build
-           run: npm run build:prod
-
-         - name: Production upload
-           uses: actions/upload-artifact@v2
-           with:
-              name: dist
-              path: dist/
-
-   deploy:
-      if: github.event.pull_request.merged == true || github.event_name == 'push'
-      needs: [dependencies, tests, build]
-      runs-on: ubuntu-latest
-      strategy:
-         matrix:
-            node-version: [14]
-      env:
-         CI_PUSH_EMAIL: ${{secrets.CI_PUSH_EMAIL}}
-      steps:
-         - uses: actions/checkout@v2
-
-         - name: Git configuration
-           run: |
-              git config --global user.email $CI_PUSH_EMAIL
-              git config --global user.name "Opentech UX Github Actions"
-
-         - name: Build clean
-           run: |
-              sudo rm -R dist
-              sudo rm -R dist-dev
-
-         - name: Development download
-           uses: actions/download-artifact@v2
-           with:
-              name: dist-dev
-              path: dist-dev
-
-         - name: Production download
-           uses: actions/download-artifact@v2
-           with:
-              name: dist
-              path: dist
-
-         - name: Git commit
-           run: |
-              git add --all
-              git diff-index --quiet HEAD || git commit -m "Build complete [$(date '+%d/%m/%y %T UTC' -u)] [skip actions]"
-
-         - name: Git push
-           run: git push
+            - name: Upload build artifacts
+              if: github.event_name == 'push'
+              uses: actions/upload-artifact@v4
+              with:
+                  name: build-artifacts
+                  path: |
+                      dist/
+                      dist-dev/
